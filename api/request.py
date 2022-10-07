@@ -12,7 +12,7 @@ class Request:
     def get_requests(cls, url: str, params: RequestParameters) -> dict:
         service_name = url.split("/")[-1]
 
-        response = requests.get(url=url, params=params.asdict_ignoring_none())
+        response = requests.get(url=url, params=asdict(params))
         response.encoding = "UTF-8"
 
         text = response.text.replace("<br/>", "\n")
@@ -20,9 +20,7 @@ class Request:
         status_code = cls._get_status_code(json_response=json_response, key=service_name)
         cls._check_status_code(status_code=status_code)
 
-        return cls._get_row_data(json_response=json_response,
-                                 service_name=service_name,
-                                 office_education_name=params.ATPT_OFCDC_SC_NM)
+        return cls._get_row_data(json_response=json_response, service_name=service_name)
 
     @classmethod
     def _loads_json(cls, json_string: str) -> dict:
@@ -31,10 +29,7 @@ class Request:
     @classmethod
     def _get_status_code(cls, json_response: dict, key: str) -> str:
         try:
-            if isinstance(json_response[key][0]['head'], list):
-                status_code = json_response[key][0]["head"][1]["RESULT"]["CODE"]
-            else:
-                status_code = json_response[key][0]["head"]["RESULT"]["CODE"]
+            status_code = json_response[key][0]["head"][1]["RESULT"]["CODE"]
         except KeyError:
             status_code = json_response["RESULT"]["CODE"]
         return status_code
@@ -47,12 +42,9 @@ class Request:
             raise StatusCodeError(error_code=status_code)
 
     @classmethod
-    def _get_row_data(cls, json_response: str, service_name: str, office_education_name: str) -> dict:
-        row_list = json_response[service_name][1]["row"]
-        for row in row_list:
-            if row['ATPT_OFCDC_SC_NM'] == office_education_name:
-                return row
-        raise ValueError("can't find school")
+    def _get_row_data(cls, json_response: str, service_name: str) -> dict:
+        return json_response[service_name][1]["row"][0]
+
 
 
 

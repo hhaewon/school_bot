@@ -12,7 +12,6 @@ class SchoolApi:
         URL = cls.BASE_URL + SubUrl.INFO.value
         return Request.get_requests(url=URL, params=params)
 
-
     @classmethod
     def load_meal_service(cls, params: RequestParameters):
         URL = cls.BASE_URL + SubUrl.MEAL.value
