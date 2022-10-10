@@ -7,7 +7,7 @@ from utils import get_token
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-TOKEN = get_token()
+TOKEN = get_token("neis")
 
 intents = discord.Intents.default()
 intents.members = True

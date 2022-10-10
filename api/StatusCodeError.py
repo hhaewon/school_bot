@@ -1,5 +1,3 @@
-
-
 class StatusCodeError(Exception):
     errors = {
         "ERROR-300": "필수 값이 누락되어 있습니다. 요청인자를 참고 하십시오.",
