@@ -1,6 +1,6 @@
-from api.RequestParameters import RequestParameters
-from api.SchoolApi import SchoolApi
-from api.region import get_region_code
+from api.request.RequestParameters import RequestParameters
+from api.request.SchoolApi import SchoolApi
+from api.request.region import get_region_code
 
 
 params = RequestParameters(
@@ -11,6 +11,8 @@ params = RequestParameters(
     ALL_TI_YMD="20221011",
     GRADE="1",
     CLASS_NM="4",
+    AA_FROM_YMD="202103",
+    AA_TO_YMD="202203"
 )
 
 response = SchoolApi.request_school_info(params=params)
@@ -27,4 +29,9 @@ print(response.dish)
 
 response = SchoolApi.request_middle_time_table(params=params)
 print(response.time_table)
+print(response)
 
+response = SchoolApi.request_school_schedule(params=params)
+print(response)
+print(response.schedule)
+# print(len(response.schedule))

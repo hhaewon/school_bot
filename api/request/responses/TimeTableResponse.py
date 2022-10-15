@@ -38,6 +38,9 @@ class ElementaryTimeTableResponse:
     def time_table(self):
         return [row.ITRT_CNTNT[1:] for row in self.rows]
 
+    def __repr__(self):
+        return self.rows.__repr__()
+
 ElementaryTimeTableList = list[ElementaryTimeTableRow]
 
 
@@ -80,6 +83,9 @@ class MiddleTimeTableResponse:
     @property
     def time_table(self):
         return [row.ITRT_CNTNT[1:] for row in self.rows]
+
+    def __repr__(self):
+        return self.rows.__repr__()
 
 
 
@@ -124,3 +130,10 @@ class HighTimeTableRow:
 class HighTimeTableResponse:
     def __init__(self, *rows: HighTimeTableRow):
         self.rows = rows
+
+    @property
+    def time_table(self):
+        return [row.ITRT_CNTNT[1:] for row in self.rows]
+
+    def __repr__(self):
+        return self.rows.__repr__()

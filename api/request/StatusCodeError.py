@@ -1,5 +1,7 @@
 class StatusCodeError(Exception):
     errors = {
+        "INFO-300": "관리자에 의해 인증키 사용이 제한되었습니다.",
+        "INFO-200": "해당하는 데이터가 없습니다.",
         "ERROR-300": "필수 값이 누락되어 있습니다. 요청인자를 참고 하십시오.",
         "ERROR-290": "인증키가 유효하지 않습니다. 인증키가 없는 경우, 홈페이지에서 인증키를 신청하십시오.",
         "ERROR-310": "해당하는 서비스를 찾을 수 없습니다. 요청인자 중 SERVICE를 확인하십시오.",
@@ -12,5 +14,5 @@ class StatusCodeError(Exception):
     }
 
     def __init__(self, error_code: str):
-        super.__init__(StatusCodeError.errors[error_code])
+        super().__init__(StatusCodeError.errors[error_code])
 

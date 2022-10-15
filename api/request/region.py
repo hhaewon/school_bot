@@ -18,11 +18,11 @@ region_codes = {
     "제주": "T10",
 }
 
-office_education_names = {v: i for i, v in region_codes.items()}
+region_names = {v: i for i, v in region_codes.items()}
 
 
-def get_region_code(office_education_name: str) -> str:
-    return region_codes[office_education_name]
+def get_region_code(region_name: str) -> str:
+    return region_codes[region_name]
 
 
 def get_office_education_name(region_code: str) -> str:
