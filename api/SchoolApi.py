@@ -6,10 +6,10 @@ import requests
 from api.SubUrl import SubUrl
 from api.responses.MealServiceResponse import MealServiceResponse
 from api.responses.SchoolInfoResponse import SchoolInfoResponse
-from api.responses.TimeTableResponse import ElementaryTimeTableResponse, MiddleTimeTableResponse, HighTimeTableResponse
+from api.responses.TimeTableResponse import ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow, \
+    ElementaryTimeTableResponse, MiddleTimeTableResponse, HighTimeTableResponse
 from api.RequestParameters import RequestParameters
 from api.StatusCodeError import StatusCodeError
-
 
 class SchoolApi:
     BASE_URL = "https://open.neis.go.kr/hub/"
@@ -19,35 +19,35 @@ class SchoolApi:
         row = cls._get_requests(url=cls.BASE_URL + SubUrl.MEAL,
                                 service_name=SubUrl.MEAL,
                                 params=params)
-        return MealServiceResponse(**row)
+        return MealServiceResponse(**row[0])
 
     @classmethod
     def request_school_info(cls, params: RequestParameters) -> SchoolInfoResponse:
         row = cls._get_requests(url=cls.BASE_URL + SubUrl.INFO,
                                 service_name=SubUrl.INFO,
                                 params=params)
-        return SchoolInfoResponse(**row)
+        return SchoolInfoResponse(**row[0])
 
     @classmethod
     def request_elementary_time_table(cls, params: RequestParameters) -> ElementaryTimeTableResponse:
-        row = cls._get_requests(url=cls.BASE_URL + SubUrl.ELEMENTARY_TIME_TABLE,
+        rows = cls._get_requests(url=cls.BASE_URL + SubUrl.ELEMENTARY_TIME_TABLE,
                                 service_name=SubUrl.ELEMENTARY_TIME_TABLE,
                                 params=params)
-        return ElementaryTimeTableResponse(**row)
+        return ElementaryTimeTableResponse(*[ElementaryTimeTableRow(**row) for row in rows])
 
     @classmethod
     def request_middle_time_table(cls, params: RequestParameters) -> MiddleTimeTableResponse:
-        row = cls._get_requests(url=cls.BASE_URL + SubUrl.MIDDLE_TIME_TABLE,
+        rows = cls._get_requests(url=cls.BASE_URL + SubUrl.MIDDLE_TIME_TABLE,
                                 service_name=SubUrl.MIDDLE_TIME_TABLE,
                                 params=params)
-        return MiddleTimeTableResponse(**row)
+        return MiddleTimeTableResponse(*[MiddleTimeTableRow(**row) for row in rows])
 
     @classmethod
     def request_high_time_table(cls, params: RequestParameters) -> HighTimeTableResponse:
-        row = cls._get_requests(url=cls.BASE_URL + SubUrl.HIGH_TIME_TABLE,
+        rows = cls._get_requests(url=cls.BASE_URL + SubUrl.HIGH_TIME_TABLE,
                                 service_name=SubUrl.HIGH_TIME_TABLE,
                                 params=params)
-        return HighTimeTableResponse(**row)
+        return HighTimeTableResponse(*[HighTimeTableRow(**row) for row in rows])
 
     @classmethod
     def _get_requests(cls, url: str, service_name: str, params: RequestParameters) -> dict:
@@ -82,6 +82,6 @@ class SchoolApi:
 
     @classmethod
     def _get_row_data(cls, json_response: dict, service_name: str) -> dict:
-        return json_response[service_name][1]["row"][0]
+        return json_response[service_name][1]["row"]
 
 

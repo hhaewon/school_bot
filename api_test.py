@@ -26,5 +26,5 @@ print(response.country_of_origin_info)
 print(response.dish)
 
 response = SchoolApi.request_middle_time_table(params=params)
-print(response)
+print(response.time_table)
 

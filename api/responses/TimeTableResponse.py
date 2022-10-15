@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(kw_only=True, slots=True)
-class ElementaryTimeTableResponse:
+class ElementaryTimeTableRow:
     """
     ATPT_OFCDC_SC_CODE: 시도교육청코드\n
     ATPT_OFCDC_SC_NM: 시도교육청명\n
@@ -30,12 +30,19 @@ class ElementaryTimeTableResponse:
     ITRT_CNTNT: str
     LOAD_DTM: str
 
+class ElementaryTimeTableResponse:
+    def __init__(self, *rows:ElementaryTimeTableRow):
+        self.rows = rows
 
-ElementaryTimeTableList = list[ElementaryTimeTableResponse]
+    @property
+    def time_table(self):
+        return [row.ITRT_CNTNT[1:] for row in self.rows]
+
+ElementaryTimeTableList = list[ElementaryTimeTableRow]
 
 
 @dataclass(kw_only=True, slots=True)
-class MiddleTimeTableResponse:
+class MiddleTimeTableRow:
     """
     ATPT_OFCDC_SC_CODE: 시도교육청코드
     ATPT_OFCDC_SC_NM: 시도교육청명
@@ -66,11 +73,18 @@ class MiddleTimeTableResponse:
     LOAD_DTM: str
 
 
-MiddleTimeTableList = list[MiddleTimeTableResponse]
+class MiddleTimeTableResponse:
+    def __init__(self, *rows: MiddleTimeTableRow):
+        self.rows = rows
+
+    @property
+    def time_table(self):
+        return [row.ITRT_CNTNT[1:] for row in self.rows]
+
 
 
 @dataclass(kw_only=True, slots=True)
-class HighTimeTableResponse:
+class HighTimeTableRow:
     """
     ATPT_OFCDC_SC_CODE: 시도교육청코드
     ATPT_OFCDC_SC_NM: 시도교육청명
@@ -107,4 +121,6 @@ class HighTimeTableResponse:
     LOAD_DTM: str
 
 
-HighTimeTableList = list[HighTimeTableResponse]
+class HighTimeTableResponse:
+    def __init__(self, *rows: HighTimeTableRow):
+        self.rows = rows
