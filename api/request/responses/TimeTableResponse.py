@@ -1,4 +1,6 @@
+from __future__ import annotations
 from dataclasses import dataclass
+from typing import Iterable, Generic, TypeVar
 
 
 @dataclass(kw_only=True, slots=True)
@@ -29,19 +31,6 @@ class ElementaryTimeTableRow:
     PERIO: str
     ITRT_CNTNT: str
     LOAD_DTM: str
-
-class ElementaryTimeTableResponse:
-    def __init__(self, *rows:ElementaryTimeTableRow):
-        self.rows = rows
-
-    @property
-    def time_table(self):
-        return [row.ITRT_CNTNT[1:] for row in self.rows]
-
-    def __repr__(self):
-        return self.rows.__repr__()
-
-ElementaryTimeTableList = list[ElementaryTimeTableRow]
 
 
 @dataclass(kw_only=True, slots=True)
@@ -74,19 +63,6 @@ class MiddleTimeTableRow:
     PERIO: str
     ITRT_CNTNT: str
     LOAD_DTM: str
-
-
-class MiddleTimeTableResponse:
-    def __init__(self, *rows: MiddleTimeTableRow):
-        self.rows = rows
-
-    @property
-    def time_table(self):
-        return [row.ITRT_CNTNT[1:] for row in self.rows]
-
-    def __repr__(self):
-        return self.rows.__repr__()
-
 
 
 @dataclass(kw_only=True, slots=True)
@@ -127,13 +103,16 @@ class HighTimeTableRow:
     LOAD_DTM: str
 
 
-class HighTimeTableResponse:
-    def __init__(self, *rows: HighTimeTableRow):
-        self.rows = rows
+_T = TypeVar('_T', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
+
+
+class TimeTableResponse(Generic[_T]):
+    def __init__(self, rows: Iterable[_T]):
+        self._rows = rows
 
     @property
-    def time_table(self):
-        return [row.ITRT_CNTNT[1:] for row in self.rows]
+    def time_table(self) -> list[str]:
+        return [row.ITRT_CNTNT  for row in self._rows]
 
     def __repr__(self):
-        return self.rows.__repr__()
+        return self._rows.__repr__()

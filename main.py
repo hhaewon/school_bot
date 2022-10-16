@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import os
 
 import discord
 from discord.ext import commands
@@ -9,11 +10,10 @@ from api.request.RequestParameters import RequestParameters
 from api.request.SchoolApi import SchoolApi
 from api.request.StatusCodeError import StatusCodeError
 from api.request.region import get_region_code
-from utils import get_token
 
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-TOKEN = get_token("DISCORD_TOKEN")
+TOKEN = os.environ['DISCORD_TOKEN']
 
 intents = discord.Intents.default()
 intents.members = True

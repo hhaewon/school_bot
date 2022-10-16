@@ -15,23 +15,25 @@ params = RequestParameters(
     AA_TO_YMD="202203"
 )
 
-response = SchoolApi.request_school_info(params=params)
-print(response)
+school_info_response = SchoolApi.request_school_info(params=params)
+print(school_info_response)
 
-response = SchoolApi.request_school_info(params=params)
-params.SD_SCHUL_CODE = response.SD_SCHUL_CODE
-response = SchoolApi.request_meal_service(params=params)
-print(response)
-print(response.ATPT_OFCDC_SC_CODE)
-print(response.nutrient_info)
-print(response.country_of_origin_info)
-print(response.dish)
+school_info_response = SchoolApi.request_school_info(params=params)
+params.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
 
-response = SchoolApi.request_middle_time_table(params=params)
-print(response.time_table)
-print(response)
+meal_service_response = SchoolApi.request_meal_service(params=params)
+print(meal_service_response)
+print(meal_service_response.ATPT_OFCDC_SC_CODE)
+print(meal_service_response.nutrient_info)
+print(meal_service_response.country_of_origin_info)
+print(meal_service_response.dish)
 
-response = SchoolApi.request_school_schedule(params=params)
-print(response)
-print(response.schedule)
+time_table_response = SchoolApi.request_middle_time_table(params=params)
+print(time_table_response.time_table)
+print(time_table_response)
+print(time_table_response._rows)
+
+school_schedule_response = SchoolApi.request_school_schedule(params=params)
+print(school_schedule_response)
+print(school_schedule_response.schedule)
 # print(len(response.schedule))

@@ -1,10 +1,9 @@
+import os
 from dataclasses import dataclass, field
 from typing import Optional
 
-from utils import get_token
 
-
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class RequestParameters:
     """
     SCHUL_NM: 학교명
@@ -29,7 +28,7 @@ class RequestParameters:
     """
     SCHUL_NM: str
     ATPT_OFCDC_SC_CODE: str
-    KEY: str = field(init=False, repr=False, default=get_token('NEIS_TOKEN'))
+    KEY: str = field(init=False, repr=False, default=os.environ['NEIS_TOKEN'])
     Type: str = field(init=False, repr=False, default='json')
     pIndex: int = 1
     pSize: int = 1000

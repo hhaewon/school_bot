@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from typing import Iterable
 
-@dataclass
+
+@dataclass(slots=True, kw_only=True)
 class SchoolScheduleRow:
     """
     ATPT_OFCDC_SC_CODE: 시도교육청코드
@@ -41,8 +43,9 @@ class SchoolScheduleRow:
     SIX_GRADE_EVENT_YN: str
     LOAD_DTM: str
 
+
 class SchoolScheduleResponse:
-    def __init__(self, *rows: SchoolScheduleRow):
+    def __init__(self, rows: Iterable[SchoolScheduleRow]):
         self.rows = rows
 
     @property
@@ -56,10 +59,11 @@ class SchoolScheduleResponse:
                 if row.EVENT_NM not in schedule_dict:
                     schedule_dict[row.EVENT_NM] = f'{self._format_date(row.AA_YMD)} ~ {self._format_date(row.AA_YMD)}'
                 else:
-                    schedule_dict[row.EVENT_NM] = f'{schedule_dict[row.EVENT_NM][:10]} ~ {row.AA_YMD[:4]}/{row.AA_YMD[4:6]}/{row.AA_YMD[6:8]}'
+                    schedule_dict[
+                        row.EVENT_NM] = f'{schedule_dict[row.EVENT_NM][:10]} ~ {row.AA_YMD[:4]}/{row.AA_YMD[4:6]}/{row.AA_YMD[6:8]}'
             else:
                 schedule_dict[row.EVENT_NM] = self._format_date(row.AA_YMD)
-                    #f'{row.AA_YMD[:4]}/{row.AA_YMD[4:6]}/{row.AA_YMD[6:8]}'
+                # f'{row.AA_YMD[:4]}/{row.AA_YMD[4:6]}/{row.AA_YMD[6:8]}'
 
         return schedule_dict
 
