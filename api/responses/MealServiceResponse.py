@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+meal_names = ["아침", "점심", "저녁", "조식", "중식", "석식"]
 
 @dataclass(kw_only=True, slots=True)
 class MealServiceResponse:

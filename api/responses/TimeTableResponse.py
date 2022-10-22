@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Iterable, Generic, TypeVar
+from typing import Generic, TypeVar, Sequence
 
 
 @dataclass(kw_only=True, slots=True)
@@ -107,12 +108,20 @@ _T = TypeVar('_T', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
 
 
 class TimeTableResponse(Generic[_T]):
-    def __init__(self, rows: Iterable[_T]):
-        self._rows: Iterable[_T] = rows
+    def __init__(self, rows: Sequence[_T]):
+        self._rows: Sequence[_T] = rows
 
     @property
     def time_table(self) -> list[str]:
-        return [row.ITRT_CNTNT for row in self._rows]
+        lst = []
+        row: _T
+        for i, row in enumerate(self._rows, start=1):
+            lst.append(f"{i}교시. {row.ITRT_CNTNT[1:]}")
+        return lst
+
+    @property
+    def rows(self):
+        return self._rows
 
     def __repr__(self):
         return self._rows.__repr__()

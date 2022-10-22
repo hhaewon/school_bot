@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import Optional
 
 
@@ -45,5 +45,8 @@ class RequestParameters:
     AA_YMD: Optional[str] = None
     AA_FROM_YMD: Optional[str] = None
     AA_TO_YMD: Optional[str] = None
+
+    def asdict_without_None(self):
+        return asdict(self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
 
 
