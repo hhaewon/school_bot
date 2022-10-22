@@ -187,7 +187,7 @@ async def school_schedule(context: ApplicationContext,
         embed = Embed(title="시간표", colour=Colour.random(),
                       description=f"{from_date.strftime('%Y')}~{to_date.strftime('%Y')}의 학사일정")
         school_schedule_info = "\n".join(f"{day} : {name}" for name, day in schedule_response.schedule.items())
-        embed.add_field("학사일정", value=school_schedule_info)
+        embed.add_field(name="학사일정", value=school_schedule_info)
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
         embed.timestamp = now_date
 
