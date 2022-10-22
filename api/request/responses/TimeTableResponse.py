@@ -108,11 +108,11 @@ _T = TypeVar('_T', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
 
 class TimeTableResponse(Generic[_T]):
     def __init__(self, rows: Iterable[_T]):
-        self._rows = rows
+        self._rows: Iterable[_T] = rows
 
     @property
     def time_table(self) -> list[str]:
-        return [row.ITRT_CNTNT  for row in self._rows]
+        return [row.ITRT_CNTNT for row in self._rows]
 
     def __repr__(self):
         return self._rows.__repr__()

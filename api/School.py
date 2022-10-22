@@ -1,2 +1,2 @@
-class School:
-    def __init__(self, school_name):
+# class School:
+#     def __init__(self, school_name):
