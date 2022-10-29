@@ -116,7 +116,7 @@ class TimeTableResponse(Generic[_T]):
         lst = []
         row: _T
         for i, row in enumerate(self._rows, start=1):
-            lst.append(f"{i}교시. {row.ITRT_CNTNT[1:]}")
+            lst.append(f"{i}교시: {row.ITRT_CNTNT[1:]}")
         return lst
 
     @property
