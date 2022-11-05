@@ -3,14 +3,14 @@ import datetime
 
 from discord import SlashCommandGroup, ApplicationContext, Option, Embed, Colour
 
-from consts import TEST_GUILD_ID, collection, KST, KEY_NAMES, KEY_NAMES_CHOICES
+from consts import collection, KST, KEY_NAMES, KEY_NAMES_CHOICES
 from libs import RequestParameters, get_region_code, SchoolApi, StatusCodeError, region_choices, utils, meal_names
 
-users = SlashCommandGroup(name="회원", description="정보 저장", guild_ids=[TEST_GUILD_ID])
-notification = users.create_subgroup(name="알림", description="알림 설정", guild_ids=[TEST_GUILD_ID])
+users = SlashCommandGroup(name="회원", description="정보 저장")
+notification = users.create_subgroup(name="알림", description="알림 설정")
 
 
-@users.command(name="저장", description="정보를 저장합니다.", guild_ids=[TEST_GUILD_ID])
+@users.command(name="저장", description="정보를 저장합니다.")
 async def users_save_information(context: ApplicationContext,
                                  region: Option(str, description="저장할 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                                 choices=region_choices),
@@ -50,7 +50,7 @@ async def users_save_information(context: ApplicationContext,
         await context.respond("저장 중 오류가 발생했습니다.")
 
 
-@users.command(name="확인", description="저장된 정보를 확인합니다.", guild_ids=[TEST_GUILD_ID])
+@users.command(name="확인", description="저장된 정보를 확인합니다.")
 async def user_check_information(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
 
@@ -69,7 +69,7 @@ async def user_check_information(context: ApplicationContext):
     await context.respond(embed=embed)
 
 
-@users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
+@users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.")
 async def users_time_table(context: ApplicationContext,
                            day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     await context.response.defer()
@@ -112,7 +112,7 @@ async def users_time_table(context: ApplicationContext,
     await context.followup.send(embed=embed)
 
 
-@users.command(name="급식", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
+@users.command(name="급식", description="저장된 정보로 급식 정보를 가져옵니다.")
 async def users_meal_service(context: ApplicationContext,
                              day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     data = collection.find_one(filter={'id': context.user.id})
@@ -157,7 +157,7 @@ async def users_meal_service(context: ApplicationContext,
     await context.followup.send(embed=embed)
 
 
-@users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
+@users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.")
 async def users_school_schedule(context: ApplicationContext,
                              school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
                                                  name="학년도")
@@ -205,7 +205,7 @@ async def users_school_schedule(context: ApplicationContext,
     await context.followup.send(embed=embed)
 
 
-@notification.command(name="추가", description="알림을 추가합니다. (이미 설정된 알림이면 변경합니다.)", guild_ids=[TEST_GUILD_ID])
+@notification.command(name="추가", description="알림을 추가합니다. (이미 설정된 알림이면 변경합니다.)")
 async def add_notification(context: ApplicationContext,
                            name: Option(str, name="이름", description="급식, 시간표, 학사일정 중 하나인 알림을 받을 명령어의 이름 ",
                                         choices=KEY_NAMES_CHOICES),
@@ -234,7 +234,7 @@ async def add_notification(context: ApplicationContext,
     await context.followup.send("알림 추가가 완료되었습니다.")
 
 
-@notification.command(name="확인", description="설정된 알림을 확인합니다.", guild_ids=[TEST_GUILD_ID])
+@notification.command(name="확인", description="설정된 알림을 확인합니다.")
 async def check_notifications(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
 
@@ -254,7 +254,7 @@ async def check_notifications(context: ApplicationContext):
     await context.followup.send(embed=embed)
 
 
-@notification.command(name="삭제", description="지정한 알림을 삭제합니다.", guild_ids=[TEST_GUILD_ID])
+@notification.command(name="삭제", description="지정한 알림을 삭제합니다.")
 async def delete_notification(context: ApplicationContext,
                               notification_name: Option(str, name="이름", description="삭제할 알림 이름",
                                                         choices=KEY_NAMES_CHOICES)):

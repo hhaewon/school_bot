@@ -6,7 +6,7 @@ from discord import Option, ApplicationContext, Embed, Colour, Bot
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
-from consts import TEST_GUILD_ID, TOKEN, KST, client, collection, KEY_NAMES_VALUES
+from consts import TOKEN, KST, client, collection, KEY_NAMES_VALUES
 from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
     meal_names, utils
 from users import users
@@ -20,7 +20,7 @@ async def on_ready():
     print(f'Login bot: {bot.user}')
 
 
-@bot.slash_command(name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
+@bot.slash_command(name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.")
 async def meal_service(context: ApplicationContext,
                        region: Option(str, description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                       choices=region_choices),
@@ -71,7 +71,7 @@ async def meal_service(context: ApplicationContext,
     await context.followup.send(embed=embed)
 
 
-@bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.', guild_ids=[TEST_GUILD_ID])
+@bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.')
 async def time_table(context: ApplicationContext,
                      region: Option(str, description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                     choices=region_choices),
@@ -123,7 +123,7 @@ async def time_table(context: ApplicationContext,
     await context.followup.send(embed=embed)
 
 
-@bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.', guild_ids=[TEST_GUILD_ID])
+@bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.')
 async def school_schedule(context: ApplicationContext,
                           region: Option(str, description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                          choices=region_choices),
