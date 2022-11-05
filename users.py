@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 
 from discord import SlashCommandGroup, ApplicationContext, Option, Embed, Colour
@@ -71,16 +72,18 @@ async def user_check_information(context: ApplicationContext):
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
 async def users_time_table(context: ApplicationContext,
                            day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+    context.response.defer()
+    await asyncio.sleep(0)
     data = collection.find_one(filter={'id': context.user.id})
 
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     try:
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
+        await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
         return
 
     params = RequestParameters(
@@ -105,7 +108,7 @@ async def users_time_table(context: ApplicationContext,
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/439/439296.png")
     embed.timestamp = now_date
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @users.command(name="급식", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
@@ -113,14 +116,17 @@ async def users_meal_service(context: ApplicationContext,
                              day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     data = collection.find_one(filter={'id': context.user.id})
 
+    context.response.defer()
+    await asyncio.sleep(0)
+
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     try:
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
+        await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
         return
 
     params = tuple(RequestParameters(
@@ -147,7 +153,7 @@ async def users_meal_service(context: ApplicationContext,
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
     embed.timestamp = now_date
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
@@ -157,14 +163,17 @@ async def users_school_schedule(context: ApplicationContext,
                              ):
     data = collection.find_one(filter={'id': context.user.id})
 
+    context.response.defer()
+    await asyncio.sleep(0)
+
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     try:
         now_date, from_date, to_date = utils.get_school_year_date(school_year=school_year, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 식사명입니다. 아침, 점심, 저녁, 조식, 중식, 석식 중 하나를 입력해주세요")
+        await context.followup.send("잘못된 식사명입니다. 아침, 점심, 저녁, 조식, 중식, 석식 중 하나를 입력해주세요")
         return
 
     params = RequestParameters(
@@ -179,10 +188,10 @@ async def users_school_schedule(context: ApplicationContext,
         schedule_response = await SchoolApi.request_school_schedule(params=params)
     except StatusCodeError as e:
         if str(e) == "해당하는 데이터가 없습니다.":
-            await context.respond("잘못된 입력입니다.")
+            await context.followup.send("잘못된 입력입니다.")
             return
         else:
-            await context.respond("오류가 발생했습니다.")
+            await context.followup.send("오류가 발생했습니다.")
             return
 
     embed = Embed(title="시간표", colour=Colour.random(),
@@ -192,7 +201,7 @@ async def users_school_schedule(context: ApplicationContext,
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
     embed.timestamp = now_date
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @notification.command(name="추가", description="알림을 추가합니다. (이미 설정된 알림이면 변경합니다.)", guild_ids=[TEST_GUILD_ID])
@@ -202,31 +211,37 @@ async def add_notification(context: ApplicationContext,
                            time: Option(str, name="시각", description="시간:분 형식 형식의 알림을 받을 시각 (예 08:20, 19:10)")):
     data = collection.find_one(filter={"id": context.user.id})
 
+    context.response.defer()
+    await asyncio.sleep(0)
+
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     try:
         time = datetime.datetime.strptime(time, "%H:%M").strftime("%H:%M")
     except Exception as e:
         print(e)
-        await context.respond("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
+        await context.followup.send("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
         return
 
     if name not in KEY_NAMES:
-        await context.respond("급식, 시간표, 학사일정 중 하나를 입력해주세요.")
+        await context.followup.send("급식, 시간표, 학사일정 중 하나를 입력해주세요.")
         return
 
     collection.update_one(filter={"id": context.user.id}, update={'$set': {KEY_NAMES[name]: time}})
-    await context.respond("알림 추가가 완료되었습니다.")
+    await context.followup.send("알림 추가가 완료되었습니다.")
 
 
 @notification.command(name="확인", description="설정된 알림을 확인합니다.", guild_ids=[TEST_GUILD_ID])
 async def check_notifications(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
 
+    context.response.defer()
+    await asyncio.sleep(0)
+
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     embed = Embed(title="설정한 알림들", colour=Colour.random(), description=f"{context.user.mention}의 설정한 알림들")
@@ -235,7 +250,7 @@ async def check_notifications(context: ApplicationContext):
         if value in data:
             embed.add_field(name=key, value=data[value])
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @notification.command(name="삭제", description="지정한 알림을 삭제합니다.", guild_ids=[TEST_GUILD_ID])
@@ -244,14 +259,17 @@ async def delete_notification(context: ApplicationContext,
                                                         choices=KEY_NAMES_CHOICES)):
     data = collection.find_one(filter={"id": context.user.id})
 
+    context.response.defer()
+    await asyncio.sleep(0)
+
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     if KEY_NAMES[notification_name] not in data:
-        await context.respond("지정한 알림이 추가되지 않았습니다. 알림을 추가해야 삭제할 수 있습니다.")
+        await context.followup.send("지정한 알림이 추가되지 않았습니다. 알림을 추가해야 삭제할 수 있습니다.")
         return
 
     collection.update_one(filter={"id": context.user.id}, update={"$unset": {KEY_NAMES[notification_name]: True}})
 
-    await context.respond("삭제를 완료했습니다.")
+    await context.followup.send("삭제를 완료했습니다.")
