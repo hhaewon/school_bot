@@ -97,7 +97,7 @@ async def users_time_table(context: ApplicationContext,
     )
 
     embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{data['school_name']}의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
+                  description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
     try:
         time_table_response = await SchoolApi.request_time_table(params=params)
         time_table_info = "\n".join(time_table_response.time_table)

@@ -105,7 +105,7 @@ async def time_table(context: ApplicationContext,
         return
 
     embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{school_name}의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
+                  description=f"{school_name} {grade}학년 {class_name}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
     try:
         meal_response = await SchoolApi.request_time_table(params=params)
         time_table_info = "\n".join(meal_response.time_table)
@@ -214,7 +214,7 @@ async def send_notification():
     for data in time_table_datas:
         user = await bot.fetch_user(data['id'])
         embed = Embed(title="시간표", colour=Colour.random(),
-                      description=f"{data['school_name']}의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표")
+                      description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표")
         params = RequestParameters(
             ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
             SCHUL_NM=data["school_name"],
