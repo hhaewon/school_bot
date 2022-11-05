@@ -11,8 +11,6 @@ from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code,
     meal_names, utils
 from users import users
 
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
 bot = Bot()
 
 
@@ -162,7 +160,7 @@ async def school_schedule(context: ApplicationContext,
 
         await context.respond(embed=embed)
     except StatusCodeError:
-        print('잘못된 입력입니다.')
+        await context.respond("잘못된 입력입니다.")
 
 
 @loop(minutes=1.0)
@@ -172,18 +170,12 @@ async def send_notification():
     #     return
     now_time = now_date.strftime("%H:%M")
     now_full_date = now_date.strftime("%Y%m%d")
-    print(now_time)
-    print("executing")
     meal_service_datas: Cursor[Mapping[str, Any]]
     time_table_datas: Cursor[Mapping[str, Any]]
     school_schedule_datas: Cursor[Mapping[str, Any]]
     meal_service_datas, time_table_datas, school_schedule_datas = [collection.find(filter={key_name: now_time}) for
                                                                    key_name in KEY_NAMES_VALUES]
-    for data in collection.find(filter={KEY_NAMES["급식"]: now_time}):
-        print(data)
-    print(meal_service_datas, time_table_datas, school_schedule_datas)
     for data in meal_service_datas:
-        print(data)
         user = await bot.fetch_user(data['id'])
         params = tuple(RequestParameters(
             ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
@@ -248,7 +240,6 @@ async def send_notification():
 
         schedule_response = await SchoolApi.request_school_schedule(params=params)
 
-        print(schedule_response)
         if now_date.strftime("%Y/%m/%d") not in schedule_response:
             continue
 
