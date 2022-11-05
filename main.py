@@ -79,7 +79,7 @@ async def time_table(context: ApplicationContext,
                      grade: Option(int, description="시간표를 가져올 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
                                    choices=[1, 2, 3, 4, 5, 6]),
                      class_name: Option(int, description="시간표를 가져올 반", name="반"),
-                     day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                     day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     await context.response.defer()
     await asyncio.sleep(0)
 
@@ -105,7 +105,7 @@ async def time_table(context: ApplicationContext,
         return
 
     embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{school_name}의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
+                  description=f"{school_name} {grade}학년 {class_name}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
     try:
         meal_response = await SchoolApi.request_time_table(params=params)
         time_table_info = "\n".join(meal_response.time_table)
@@ -214,7 +214,7 @@ async def send_notification():
     for data in time_table_datas:
         user = await bot.fetch_user(data['id'])
         embed = Embed(title="시간표", colour=Colour.random(),
-                      description=f"{data['school_name']}의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표")
+                      description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표")
         params = RequestParameters(
             ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
             SCHUL_NM=data["school_name"],

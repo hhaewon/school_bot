@@ -71,7 +71,7 @@ async def user_check_information(context: ApplicationContext):
 
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
 async def users_time_table(context: ApplicationContext,
-                           day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                           day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     await context.response.defer()
     await asyncio.sleep(0)
 
@@ -97,7 +97,7 @@ async def users_time_table(context: ApplicationContext,
     )
 
     embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{data['school_name']}의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
+                  description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
     try:
         time_table_response = await SchoolApi.request_time_table(params=params)
         time_table_info = "\n".join(time_table_response.time_table)
@@ -114,7 +114,7 @@ async def users_time_table(context: ApplicationContext,
 
 @users.command(name="급식", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
 async def users_meal_service(context: ApplicationContext,
-                             day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                             day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     data = collection.find_one(filter={'id': context.user.id})
 
     await context.response.defer()
