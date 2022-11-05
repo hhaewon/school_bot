@@ -1,4 +1,3 @@
-import asyncio
 from collections.abc import Mapping
 from typing import Any
 
@@ -6,7 +5,7 @@ from discord import Option, ApplicationContext, Embed, Colour, Bot
 from discord.ext.tasks import loop
 from pymongo.cursor import Cursor
 
-from consts import TEST_GUILD_ID, TOKEN, KST, client, collection, KEY_NAMES_VALUES, KEY_NAMES
+from consts import TEST_GUILD_ID, TOKEN, KST, client, collection, KEY_NAMES_VALUES
 from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
     meal_names, utils
 from users import users
@@ -166,8 +165,8 @@ async def school_schedule(context: ApplicationContext,
 @loop(minutes=1.0)
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
-    # if 6 <= now_date.isoweekday():
-    #     return
+    if 6 <= now_date.isoweekday():
+        return
     now_time = now_date.strftime("%H:%M")
     now_full_date = now_date.strftime("%Y%m%d")
     meal_service_datas: Cursor[Mapping[str, Any]]
