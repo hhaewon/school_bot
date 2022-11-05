@@ -72,8 +72,9 @@ async def user_check_information(context: ApplicationContext):
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
 async def users_time_table(context: ApplicationContext,
                            day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
+
     data = collection.find_one(filter={'id': context.user.id})
 
     if data is None:
@@ -116,7 +117,7 @@ async def users_meal_service(context: ApplicationContext,
                              day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
     data = collection.find_one(filter={'id': context.user.id})
 
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
 
     if data is None:
@@ -163,7 +164,7 @@ async def users_school_schedule(context: ApplicationContext,
                              ):
     data = collection.find_one(filter={'id': context.user.id})
 
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
 
     if data is None:
@@ -211,7 +212,7 @@ async def add_notification(context: ApplicationContext,
                            time: Option(str, name="시각", description="시간:분 형식 형식의 알림을 받을 시각 (예 08:20, 19:10)")):
     data = collection.find_one(filter={"id": context.user.id})
 
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
 
     if data is None:
@@ -237,7 +238,7 @@ async def add_notification(context: ApplicationContext,
 async def check_notifications(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
 
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
 
     if data is None:
@@ -259,7 +260,7 @@ async def delete_notification(context: ApplicationContext,
                                                         choices=KEY_NAMES_CHOICES)):
     data = collection.find_one(filter={"id": context.user.id})
 
-    context.response.defer()
+    await context.response.defer()
     await asyncio.sleep(0)
 
     if data is None:

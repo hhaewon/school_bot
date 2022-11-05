@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Mapping
 from typing import Any
 
@@ -26,10 +27,13 @@ async def meal_service(context: ApplicationContext,
                        school_name: Option(str, description="급식 정보를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
                        day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 급식 정보를 가져올 날짜",
                                    name="날짜")):
+    await context.response.defer()
+    await asyncio.sleep(0)
+
     try:
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
+        await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
         return
 
     params = tuple(RequestParameters(
@@ -45,7 +49,7 @@ async def meal_service(context: ApplicationContext,
             param.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
     except StatusCodeError as e:
         if str(e) == "해당하는 데이터가 없습니다.":
-            await context.respond("잘못된 입력입니다.")
+            await context.followup.send("잘못된 입력입니다.")
         return
 
     embed = Embed(title="급식", colour=Colour.random(),
@@ -64,7 +68,7 @@ async def meal_service(context: ApplicationContext,
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
     embed.timestamp = now_date
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.', guild_ids=[TEST_GUILD_ID])
@@ -76,10 +80,13 @@ async def time_table(context: ApplicationContext,
                                    choices=[1, 2, 3, 4, 5, 6]),
                      class_name: Option(int, description="시간표를 가져올 반", name="반"),
                      day: Option(str, description="어제, 오늘, 내일, 모래 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+    await context.response.defer()
+    await asyncio.sleep(0)
+
     try:
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
+        await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
         return
 
     params = RequestParameters(
@@ -94,7 +101,7 @@ async def time_table(context: ApplicationContext,
         school_response = await SchoolApi.request_school_info(params=params)
         params.SD_SCHUL_CODE = school_response.SD_SCHUL_CODE
     except StatusCodeError:
-        await context.respond("잘못된 입력입니다.")
+        await context.followup.send("잘못된 입력입니다.")
         return
 
     embed = Embed(title="시간표", colour=Colour.random(),
@@ -104,7 +111,7 @@ async def time_table(context: ApplicationContext,
         time_table_info = "\n".join(meal_response.time_table)
         embed.add_field(name="시간표", value=time_table_info)
     except ValueError:
-        await context.respond("잘못된 학교이름입니다.")
+        await context.followup.send("잘못된 학교이름입니다.")
         return
     except StatusCodeError as e:
         if str(e) == "해당하는 데이터가 없습니다.":
@@ -113,7 +120,7 @@ async def time_table(context: ApplicationContext,
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/439/439296.png")
     embed.timestamp = now_date
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
 
 
 @bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.', guild_ids=[TEST_GUILD_ID])
@@ -123,10 +130,13 @@ async def school_schedule(context: ApplicationContext,
                           school_name: Option(str, "학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"),
                           school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
                                               name="학년도")):
+    await context.response.defer()
+    await asyncio.sleep(0)
+
     try:
         now_date, from_date, to_date = utils.get_school_year_date(school_year=school_year, timezone_=KST)
     except ValueError:
-        await context.respond("잘못된 연도 형식입니다. 연도 형식으로 입력해주세요 (예 2022, 2010)")
+        await context.followup.send("잘못된 연도 형식입니다. 연도 형식으로 입력해주세요 (예 2022, 2010)")
         return
 
     params = RequestParameters(
@@ -141,10 +151,10 @@ async def school_schedule(context: ApplicationContext,
         params.SD_SCHUL_CODE = school_response.SD_SCHUL_CODE
     except StatusCodeError as e:
         if str(e) == "해당하는 데이터가 없습니다.":
-            await context.respond("잘못된 입력입니다.")
+            await context.followup.send("잘못된 입력입니다.")
             return
         else:
-            await context.respond("오류가 발생했습니다.")
+            await context.followup.send("오류가 발생했습니다.")
             return
 
     try:
@@ -157,9 +167,9 @@ async def school_schedule(context: ApplicationContext,
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
         embed.timestamp = now_date
 
-        await context.respond(embed=embed)
+        await context.followup.send(embed=embed)
     except StatusCodeError:
-        await context.respond("잘못된 입력입니다.")
+        await context.followup.send("잘못된 입력입니다.")
 
 
 @tasks.loop(minutes=1.0)
