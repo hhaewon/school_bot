@@ -3,7 +3,7 @@ import datetime
 from discord import SlashCommandGroup, ApplicationContext, Option, Embed, Colour
 
 from consts import TEST_GUILD_ID, collection, KST, KEY_NAMES, KEY_NAMES_CHOICES
-from lib import RequestParameters, get_region_code, SchoolApi, StatusCodeError, region_choices, utils, meal_names
+from libs import RequestParameters, get_region_code, SchoolApi, StatusCodeError, region_choices, utils, meal_names
 
 users = SlashCommandGroup(name="회원", description="정보 저장", guild_ids=[TEST_GUILD_ID])
 notification = users.create_subgroup(name="알림", description="알림 설정", guild_ids=[TEST_GUILD_ID])

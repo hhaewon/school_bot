@@ -7,7 +7,7 @@ from discord.ext.tasks import loop
 from pymongo.cursor import Cursor
 
 from consts import TEST_GUILD_ID, TOKEN, KST, client, collection, KEY_NAMES_VALUES, KEY_NAMES
-from lib import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
+from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
     meal_names, utils
 from users import users
 

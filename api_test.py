@@ -1,7 +1,7 @@
-from lib.RequestParameters import RequestParameters
-from lib.responses import MealServiceResponse, TimeTableResponse, MiddleTimeTableRow, SchoolScheduleResponse
-from lib.SchoolApi import SchoolApi
-from lib.region import get_region_code
+from libs.RequestParameters import RequestParameters
+from libs.responses import MealServiceResponse, TimeTableResponse, MiddleTimeTableRow, SchoolScheduleResponse
+from libs.SchoolApi import SchoolApi
+from libs.region import get_region_code
 import asyncio
 
 
