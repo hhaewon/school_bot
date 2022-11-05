@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from discord import Option, ApplicationContext, Embed, Colour, Bot
-from discord.ext.tasks import loop
+from discord.ext import tasks
 from pymongo.cursor import Cursor
 
 from consts import TEST_GUILD_ID, TOKEN, KST, client, collection, KEY_NAMES_VALUES
@@ -162,7 +162,7 @@ async def school_schedule(context: ApplicationContext,
         await context.respond("잘못된 입력입니다.")
 
 
-@loop(minutes=1.0)
+@tasks.loop(minutes=1.0)
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
     if 6 <= now_date.isoweekday():

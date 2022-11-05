@@ -151,7 +151,7 @@ async def users_meal_service(context: ApplicationContext,
 
 
 @users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=[TEST_GUILD_ID])
-async def users_meal_service(context: ApplicationContext,
+async def users_school_schedule(context: ApplicationContext,
                              school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
                                                  name="학년도")
                              ):
@@ -239,7 +239,7 @@ async def check_notifications(context: ApplicationContext):
 
 
 @notification.command(name="삭제", description="지정한 알림을 삭제합니다.", guild_ids=[TEST_GUILD_ID])
-async def check_notifications(context: ApplicationContext,
+async def delete_notification(context: ApplicationContext,
                               notification_name: Option(str, name="이름", description="삭제할 알림 이름",
                                                         choices=KEY_NAMES_CHOICES)):
     data = collection.find_one(filter={"id": context.user.id})

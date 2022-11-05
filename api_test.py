@@ -40,10 +40,9 @@ async def main():
 
     print(time_table_response.time_table)
     print(time_table_response)
-    print(time_table_response._rows)
 
     print(school_schedule_response)
-    print(len(school_schedule_response.rows))
+    print(school_schedule_response.rows)
     print(school_schedule_response.schedule)
     print(school_schedule_response.schedule.items())
     print(school_schedule_response.schedule2)

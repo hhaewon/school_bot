@@ -1,7 +1,8 @@
 import datetime
 import os
+from typing import Mapping, Any
 
-import pymongo
+from pymongo import MongoClient
 
 TOKEN = os.environ['DISCORD_TOKEN']
 MONGO_PASSWORD = os.environ['MONGO_PASSWORD']
@@ -11,7 +12,7 @@ TEST_GUILD_ID = 802077280074465280
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
 URI = f"mongodb+srv://hhaewon:{MONGO_PASSWORD}@cluster0.gbbippl.mongodb.net/?retryWrites=true&w=majority"
-client = pymongo.MongoClient(URI)
+client: MongoClient[Mapping[str, Any]] = MongoClient(URI)
 collection = client['users']['users']
 
 KEY_NAMES = {"급식": "meal_service_time",
