@@ -72,7 +72,7 @@ async def user_check_information(context: ApplicationContext):
     await context.followup.send(embed=embed)
 
 @users.command(name="삭제", description="저장된 회원 정보를 삭제합니다.")
-async def user_check_information(context: ApplicationContext):
+async def user_delete_information(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
 
     await context.response.defer()
