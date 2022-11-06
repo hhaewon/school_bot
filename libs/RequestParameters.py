@@ -46,7 +46,7 @@ class RequestParameters:
     AA_FROM_YMD: Optional[str] = None
     AA_TO_YMD: Optional[str] = None
 
-    def asdict_without_None(self):
+    def asdict_without_None(self) -> dict[str, str]:
         return asdict(self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
 
 
