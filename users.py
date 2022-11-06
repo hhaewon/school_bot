@@ -50,9 +50,12 @@ async def users_save_information(context: ApplicationContext,
         await context.respond("저장 중 오류가 발생했습니다.")
 
 
-@users.command(name="확인", description="저장된 정보를 확인합니다.")
+@users.command(name="확인", description="저장된 회원 정보를 확인합니다.")
 async def user_check_information(context: ApplicationContext):
     data = collection.find_one(filter={"id": context.user.id})
+
+    await context.response.defer()
+    await asyncio.sleep(0)
 
     if data is None:
         await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
@@ -66,7 +69,22 @@ async def user_check_information(context: ApplicationContext):
     embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
     embed.timestamp = datetime.datetime.now()
 
-    await context.respond(embed=embed)
+    await context.followup.send(embed=embed)
+
+@users.command(name="삭제", description="저장된 회원 정보를 삭제합니다.")
+async def user_check_information(context: ApplicationContext):
+    data = collection.find_one(filter={"id": context.user.id})
+
+    await context.response.defer()
+    await asyncio.sleep(0)
+
+    if data is None:
+        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        return
+
+    collection.delete_one(filter={{"id": context.user.id}})
+
+    await context.followup.send("회원 정보 삭제를 완료했습니다.")
 
 
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.")
@@ -159,9 +177,10 @@ async def users_meal_service(context: ApplicationContext,
 
 @users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.")
 async def users_school_schedule(context: ApplicationContext,
-                             school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
-                                                 name="학년도")
-                             ):
+                                school_year: Option(str,
+                                                    description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
+                                                    name="학년도")
+                                ):
     data = collection.find_one(filter={'id': context.user.id})
 
     await context.response.defer()
@@ -209,7 +228,8 @@ async def users_school_schedule(context: ApplicationContext,
 async def add_notification(context: ApplicationContext,
                            name: Option(str, name="이름", description="급식, 시간표, 학사일정 중 하나인 알림을 받을 명령어의 이름 ",
                                         choices=KEY_NAMES_CHOICES),
-                           time: Option(str, name="시각", description="시간:분 형식 형식의 알림을 받을 시각, 6시 이상 가능 (예 08:20, 19:10)")):
+                           time: Option(str, name="시각",
+                                        description="시간:분 형식 형식의 알림을 받을 시각, 6시 이상 가능 (예 08:20, 19:10)")):
     data = collection.find_one(filter={"id": context.user.id})
 
     await context.response.defer()
@@ -236,10 +256,10 @@ async def add_notification(context: ApplicationContext,
 
 @notification.command(name="확인", description="설정된 알림을 확인합니다.")
 async def check_notifications(context: ApplicationContext):
-    data = collection.find_one(filter={"id": context.user.id})
-
     await context.response.defer()
     await asyncio.sleep(0)
+
+    data = collection.find_one(filter={"id": context.user.id})
 
     if data is None:
         await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
