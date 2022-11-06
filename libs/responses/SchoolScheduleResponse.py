@@ -51,10 +51,10 @@ class SchoolScheduleResponse:
 
     @property
     def schedule2(self):
-        dates = {}
+        dates = dict()
         for key, schedule in self.schedule.items():
             if "~" not in schedule:
-                dates |= {schedule: key}
+                dates[schedule] = key
             else:
                 from_date_str: str
                 to_date_str: str
@@ -63,9 +63,9 @@ class SchoolScheduleResponse:
                 to_date: datetime.datetime = datetime.datetime.strptime(to_date_str, "%Y/%m/%d") + datetime.timedelta(
                     days=1)
                 while from_date != to_date:
-                    dates |= {from_date.strftime("%Y/%m/%d"): key}
+                    dates[from_date.strftime("%Y/%m/%d")] = key
                     from_date += datetime.timedelta(days=1)
-        return dict(sorted(dates.items(), key=lambda x: x[1]))
+        return dict(sorted(dates.items(), key=lambda x: x[0]))
 
     @property
     def schedule(self) -> dict[str, str]:

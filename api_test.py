@@ -14,8 +14,8 @@ async def main():
         ALL_TI_YMD="20221104",
         GRADE="1",
         CLASS_NM="4",
-        AA_FROM_YMD="202203",
-        AA_TO_YMD="202303"
+        AA_FROM_YMD="202103",
+        AA_TO_YMD="202203"
     )
     school_params = RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code("강원"),
