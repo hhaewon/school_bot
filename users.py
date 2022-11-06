@@ -82,7 +82,7 @@ async def user_delete_information(context: ApplicationContext):
         await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
-    collection.delete_one(filter={{"id": context.user.id}})
+    collection.delete_one(filter={"id": context.user.id})
 
     await context.followup.send("회원 정보 삭제를 완료했습니다.")
 
