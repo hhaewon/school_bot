@@ -146,7 +146,7 @@ async def users_meal_service(context: ApplicationContext,
             meal_response = await SchoolApi.request_meal_service(params=params[i])
             cal_info = f"**칼로리**: {meal_response.CAL_INFO}"
             menu_info = "\n".join(meal_response.dish).replace("(", "").replace(")", "")
-            embed.add_field(name=meal_name, value=f"{menu_info}\n\n{cal_info}")
+            embed.add_field(name=f"**{meal_name}**", value=f"{cal_info}\n\n{menu_info}")
         except StatusCodeError as e:
             if str(e) == "해당하는 데이터가 없습니다.":
                 embed.add_field(name=meal_name, value="없음")
@@ -174,7 +174,7 @@ async def users_school_schedule(context: ApplicationContext,
     try:
         now_date, from_date, to_date = utils.get_school_year_date(school_year=school_year, timezone_=KST)
     except ValueError:
-        await context.followup.send("잘못된 식사명입니다. 아침, 점심, 저녁, 조식, 중식, 석식 중 하나를 입력해주세요")
+        await context.followup.send("잘못된 학년도 형식입니다. 연도 형식으로 입력해주세요 (예 2022, 2010)")
         return
 
     params = RequestParameters(
@@ -209,7 +209,7 @@ async def users_school_schedule(context: ApplicationContext,
 async def add_notification(context: ApplicationContext,
                            name: Option(str, name="이름", description="급식, 시간표, 학사일정 중 하나인 알림을 받을 명령어의 이름 ",
                                         choices=KEY_NAMES_CHOICES),
-                           time: Option(str, name="시각", description="시간:분 형식 형식의 알림을 받을 시각 (예 08:20, 19:10)")):
+                           time: Option(str, name="시각", description="시간:분 형식 형식의 알림을 받을 시각, 6시 이상 가능 (예 08:20, 19:10)")):
     data = collection.find_one(filter={"id": context.user.id})
 
     await context.response.defer()
@@ -250,6 +250,11 @@ async def check_notifications(context: ApplicationContext):
     for key, value in KEY_NAMES.items():
         if value in data:
             embed.add_field(name=key, value=data[value])
+        else:
+            embed.add_field(name=key, value="미지정")
+
+    embed.timestamp = datetime.datetime.now()
+    embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
 
     await context.followup.send(embed=embed)
 
