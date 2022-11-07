@@ -23,10 +23,13 @@ async def users_save_information(context: ApplicationContext,
         SCHUL_NM=school_name,
     )
 
+    await context.response.defer()
+    await asyncio.sleep(0)
+
     try:
         school_response = await SchoolApi.request_school_info(params=params)
     except StatusCodeError:
-        await context.respond("잘못된 입력입니다.")
+        await context.followup.send("잘못된 입력입니다.")
         return
 
     former_data = collection.find_one(filter={"id": context.user.id})
@@ -44,10 +47,10 @@ async def users_save_information(context: ApplicationContext,
         else:
             new_values = {"$set": data}
             collection.update_one(filter={'id': context.user.id}, update=new_values)
-        await context.respond("저장을 완료했습니다.")
+        await context.followup.send("저장을 완료했습니다.")
     except Exception as e:
         print(e)
-        await context.respond("저장 중 오류가 발생했습니다.")
+        await context.followup.send("저장 중 오류가 발생했습니다.")
 
 
 @users.command(name="확인", description="저장된 회원 정보를 확인합니다.")
@@ -58,7 +61,7 @@ async def user_check_information(context: ApplicationContext):
     await asyncio.sleep(0)
 
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     embed = Embed(title="회원 정보", colour=Colour.random(), description=f"{context.user.mention}의 정보")
@@ -80,7 +83,7 @@ async def user_delete_information(context: ApplicationContext):
     await asyncio.sleep(0)
 
     if data is None:
-        await context.respond("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
+        await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
     collection.delete_one(filter={"id": context.user.id})
@@ -243,11 +246,17 @@ async def add_notification(context: ApplicationContext,
         return
 
     try:
-        time = datetime.datetime.strptime(time, "%H:%M").strftime("%H:%M")
+        entered_datetime = datetime.datetime.strptime(time, "%H:%M")
     except Exception as e:
         print(e)
         await context.followup.send("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
         return
+
+    if entered_datetime <= datetime.datetime.strptime("6:00", "%H:%M"):
+        await context.followup.send("시각을 6시 이상으로 입력해주세요.")
+        return
+
+
 
     if name not in KEY_NAMES:
         await context.followup.send("급식, 시간표, 학사일정 중 하나를 입력해주세요.")
