@@ -163,10 +163,10 @@ async def users_meal_service(context: ApplicationContext,
     for i, meal_name in enumerate(meal_names[3:]):
         try:
             meal_response = await SchoolApi.request_meal_service(params=params[i])
-            cal_info = f"**칼로리**: {meal_response.CAL_INFO}"
+            cal_info = f"**총 칼로리**: {meal_response.CAL_INFO}"
             menu_info = "\n".join(meal_response.dish).replace("(", "").replace(")", "")
             nutrient_of_dish_info = "\n".join(
-                f"{k}: {v.replace('R.E.', 'RE')} " for k, v in meal_response.nutrient_info.items())
+                f"{k}: {v.replace('R.E', 'RE')} " for k, v in meal_response.nutrient_info.items())
             embed.add_field(name=meal_name, value=f"{cal_info}\n\n{menu_info}\n\n**영양정보**\n{nutrient_of_dish_info}")
         except StatusCodeError as e:
             if str(e) == "해당하는 데이터가 없습니다.":
