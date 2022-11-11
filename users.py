@@ -247,6 +247,7 @@ async def add_notification(context: ApplicationContext,
 
     try:
         entered_datetime = datetime.datetime.strptime(time, "%H:%M")
+        time_argument = entered_datetime.strftime("%H:%M")
     except Exception as e:
         print(e)
         await context.followup.send("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
@@ -262,7 +263,7 @@ async def add_notification(context: ApplicationContext,
         await context.followup.send("급식, 시간표, 학사일정 중 하나를 입력해주세요.")
         return
 
-    collection.update_one(filter={"id": context.user.id}, update={'$set': {KEY_NAMES[name]: time}})
+    collection.update_one(filter={"id": context.user.id}, update={'$set': {KEY_NAMES[name]: time_argument}})
     await context.followup.send("알림 추가가 완료되었습니다.")
 
 
