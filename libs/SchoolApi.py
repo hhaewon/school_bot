@@ -2,14 +2,13 @@ import json
 
 import aiohttp
 
-from libs.SubUrl import SubUrl
-from libs.responses.MealServiceResponse import MealServiceResponse
-from libs.responses.SchoolInfoResponse import SchoolInfoResponse
-from libs.responses.SchoolScheduleResponse import SchoolScheduleResponse, SchoolScheduleRow
-from libs.responses.TimeTableResponse import ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow, \
-    TimeTableResponse, T
-from libs.RequestParameters import RequestParameters
-from libs.StatusCodeError import StatusCodeError
+from .SubUrl import SubUrl
+from .responses.MealServiceResponse import MealServiceResponse
+from .responses.SchoolInfoResponse import SchoolInfoResponse
+from .responses.SchoolScheduleResponse import SchoolScheduleResponse, SchoolScheduleRow
+from .responses.TimeTableResponse import TimeTableResponse, T
+from .RequestParameters import RequestParameters, time_table_classes
+from .StatusCodeError import StatusCodeError
 
 
 class SchoolApi:
@@ -65,37 +64,18 @@ class SchoolApi:
 
     @classmethod
     async def request_time_table(cls, params: RequestParameters) -> TimeTableResponse[T]:
-        school_name = params.SCHUL_NM
-        if school_name.endswith('초등학교'):
-            return await cls._request_elementary_time_table(params=params)
-        elif school_name.endswith('중학교'):
-            return await cls._request_middle_time_table(params=params)
-        elif school_name.endswith('고등학교'):
-            return await cls._request_high_time_table(params=params)
-        else:
-            raise ValueError('잘못된 학교이름입니다.')
+        response_type = time_table_classes[params.school_level.name]
+        rows = await cls._request_time_table(params=params, response_type=response_type)
+        return rows
 
     @classmethod
-    async def _request_elementary_time_table(cls, params: RequestParameters) -> TimeTableResponse[
-        ElementaryTimeTableRow]:
-        rows = await cls._get_requests(url=cls.BASE_URL + SubUrl.ELEMENTARY_TIME_TABLE,
-                                       service_name=SubUrl.ELEMENTARY_TIME_TABLE,
+    async def _request_time_table(cls, params: RequestParameters, response_type: type[T]) -> TimeTableResponse[T]:
+        sub_url = getattr(SubUrl, params.school_level.name)
+        rows = await cls._get_requests(url=f"{cls.BASE_URL}{sub_url}",
+                                       service_name=sub_url,
                                        params=params)
-        return TimeTableResponse([ElementaryTimeTableRow(**row) for row in rows])
 
-    @classmethod
-    async def _request_middle_time_table(cls, params: RequestParameters) -> TimeTableResponse[MiddleTimeTableRow]:
-        rows = await cls._get_requests(url=cls.BASE_URL + SubUrl.MIDDLE_TIME_TABLE,
-                                       service_name=SubUrl.MIDDLE_TIME_TABLE,
-                                       params=params)
-        return TimeTableResponse([MiddleTimeTableRow(**row) for row in rows])
-
-    @classmethod
-    async def _request_high_time_table(cls, params: RequestParameters) -> TimeTableResponse[HighTimeTableRow]:
-        rows = await cls._get_requests(url=cls.BASE_URL + SubUrl.HIGH_TIME_TABLE,
-                                       service_name=SubUrl.HIGH_TIME_TABLE,
-                                       params=params)
-        return TimeTableResponse([HighTimeTableRow(**row) for row in rows])
+        return TimeTableResponse([response_type(**row) for row in rows])
 
     @classmethod
     async def request_school_schedule(cls, params: RequestParameters) -> SchoolScheduleResponse:
@@ -103,4 +83,3 @@ class SchoolApi:
                                        service_name=SubUrl.SCHOOL_SCHEDULE,
                                        params=params)
         return SchoolScheduleResponse([SchoolScheduleRow(**row) for row in rows])
-

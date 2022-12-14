@@ -104,7 +104,7 @@ class HighTimeTableRow:
     LOAD_DTM: str
 
 
-T = TypeVar('T', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
+T = TypeVar('TimeTableRow', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
 
 
 class TimeTableResponse(Generic[T]):

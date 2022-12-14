@@ -177,8 +177,7 @@ async def school_schedule(context: ApplicationContext,
 @tasks.loop(minutes=1.0)
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
-    if 6 <= now_date.isoweekday():
-        return
+
     now_time = now_date.strftime("%H:%M")
     now_full_date = now_date.strftime("%Y%m%d")
     meal_service_datas: Cursor[Mapping[str, Any]]
@@ -196,9 +195,8 @@ async def send_notification():
             MMEAL_SC_CODE=str(i),
         ) for i in range(1, 4))
 
-        embed = Embed(title="급식", colour=Colour.random(),
-                      description=f"{data['school_name']}의 {now_date.strftime('%Y년 %m월 %d일')}의 급식")
-
+        description = f"{data['school_name']}의 {now_date.strftime('%Y년 %m월 %d일')}의 급식"
+        embed = Embed(title="급식", colour=Colour.random(), description=description)
         for i, meal_name in enumerate(meal_names[3:]):
             try:
                 meal_response = await SchoolApi.request_meal_service(params=params[i])
@@ -208,7 +206,7 @@ async def send_notification():
                     f"{k}: {v.replace('R.E', 'RE')} " for k, v in meal_response.nutrient_info.items())
                 embed.add_field(name=meal_name, value=f"{cal_info}\n\n{menu_info}\n\n**영양정보**\n{nutrient_of_dish_info}")
             except StatusCodeError as e:
-                if str(e) == "해당하는 데이터가 없습니다.":
+                if e.error_code == "INFO-200":
                     embed.add_field(name=meal_name, value="없음")
 
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
@@ -217,8 +215,9 @@ async def send_notification():
 
     for data in time_table_datas:
         user = await bot.fetch_user(data['id'])
-        embed = Embed(title="시간표", colour=Colour.random(),
-                      description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표")
+        school_name, grade, class_name = data['school_name'], data['grade'], data['class_name']
+        description = f"{school_name} {grade}학년 {class_name}반의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표"
+        embed = Embed(title="시간표", colour=Colour.random(), description=description)
         params = RequestParameters(
             ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
             SCHUL_NM=data["school_name"],
@@ -256,8 +255,9 @@ async def send_notification():
         if now_date.strftime("%Y/%m/%d") not in schedule_response:
             continue
 
+        description = f"{data['school_name']}의 {from_date.strftime('%Y')}~{to_date.strftime('%Y')}의 학사일정"
         embed = Embed(title="시간표", colour=Colour.random(),
-                      description=f"{data['school_name']}의 {from_date.strftime('%Y')}~{to_date.strftime('%Y')}의 학사일정")
+                      description=description)
         embed.add_field(name="학사일정", value=schedule_response.schedule2[now_date.strftime("%Y/%m/%d")])
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
         embed.timestamp = now_date

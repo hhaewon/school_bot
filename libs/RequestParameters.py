@@ -2,6 +2,16 @@ import os
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
+from .responses.TimeTableResponse import T, ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow
+from .SubUrl import SubUrl
+
+
+time_table_classes: dict[SubUrl, type[T]] = {
+    SubUrl.ELEMENTARY.name: ElementaryTimeTableRow,
+    SubUrl.MIDDLE.name: MiddleTimeTableRow,
+    SubUrl.HIGH.name: HighTimeTableRow,
+}
+
 
 @dataclass(slots=True, kw_only=True)
 class RequestParameters:
@@ -45,8 +55,17 @@ class RequestParameters:
     AA_YMD: Optional[str] = None
     AA_FROM_YMD: Optional[str] = None
     AA_TO_YMD: Optional[str] = None
+    school_level: str = field(init=False, repr=False)
 
     def asdict_without_None(self) -> dict[str, str]:
         return asdict(self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})
 
-
+    def __post_init__(self):
+        if self.SCHUL_NM.endswith("초등학교"):
+            self.school_level = SubUrl.ELEMENTARY
+        elif self.SCHUL_NM.endswith("중학교"):
+            self.school_level = SubUrl.MIDDLE
+        elif self.SCHUL_NM.endswith("고등학교"):
+            self.school_level = SubUrl.HIGH
+        else:
+            raise ValueError("school name is not available")
