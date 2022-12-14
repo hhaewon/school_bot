@@ -117,9 +117,8 @@ async def users_time_table(context: ApplicationContext,
         CLASS_NM=str(data["class_name"]),
         ALL_TI_YMD=date.strftime("%Y%m%d"),
     )
-
-    embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
+    description = f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표"
+    embed = Embed(title="시간표", colour=Colour.random(), description=description)
     try:
         time_table_response = await SchoolApi.request_time_table(params=params)
         time_table_info = "\n".join(time_table_response.time_table)
@@ -235,7 +234,7 @@ async def add_notification(context: ApplicationContext,
                            name: Option(str, name="이름", description="급식, 시간표, 학사일정 중 하나인 알림을 받을 명령어의 이름 ",
                                         choices=KEY_NAMES_CHOICES),
                            time: Option(str, name="시각",
-                                        description="시간:분 형식 형식의 알림을 받을 시각, 6시 이상 가능 (예 08:20, 19:10)")):
+                                        description="시간:분 형식 형식의 알림을 받을 시각 (예 08:20, 19:10)")):
     data = collection.find_one(filter={"id": context.user.id})
 
     await context.response.defer()
@@ -252,12 +251,6 @@ async def add_notification(context: ApplicationContext,
         print(e)
         await context.followup.send("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
         return
-
-    if entered_datetime <= datetime.datetime.strptime("6:00", "%H:%M"):
-        await context.followup.send("시각을 6시 이상으로 입력해주세요.")
-        return
-
-
 
     if name not in KEY_NAMES:
         await context.followup.send("급식, 시간표, 학사일정 중 하나를 입력해주세요.")
