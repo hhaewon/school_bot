@@ -6,7 +6,7 @@ from .SubUrl import SubUrl
 from .responses.MealServiceResponse import MealServiceResponse
 from .responses.SchoolInfoResponse import SchoolInfoResponse
 from .responses.SchoolScheduleResponse import SchoolScheduleResponse, SchoolScheduleRow
-from .responses.TimeTableResponse import TimeTableResponse, T
+from .responses.TimeTableResponse import TimeTableResponse
 from .RequestParameters import RequestParameters, time_table_classes
 from .StatusCodeError import StatusCodeError
 
@@ -15,11 +15,11 @@ class SchoolApi:
     BASE_URL = "https://open.neis.go.kr/hub/"
 
     @classmethod
-    async def _get_requests(cls, url: str, service_name: str, params: RequestParameters) -> dict:
+    async def _get_requests(cls, url: str, service_name: str, params: RequestParameters) -> list[dict]:
         async with (aiohttp.ClientSession() as session,
                     session.get(url=url, params=params.asdict_without_None()) as response):
             text = (await response.text()).replace("<br/>", "\n")
-            json_response = cls._loads_json(json_string=text)
+            json_response: dict = json.loads(text, strict=False) 
             status_code = cls._get_status_code(json_response=json_response, key=service_name)
             cls._check_status_code(status_code=status_code)
 
@@ -32,9 +32,9 @@ class SchoolApi:
     @classmethod
     def _get_status_code(cls, json_response: dict, key: str) -> str:
         try:
-            status_code = json_response[key][0]["head"][1]["RESULT"]["CODE"]
+            status_code: str = json_response[key][0]["head"][1]["RESULT"]["CODE"]
         except KeyError:
-            status_code = json_response["RESULT"]["CODE"]
+            status_code: str = json_response["RESULT"]["CODE"]
         return status_code
 
     @classmethod
@@ -45,7 +45,7 @@ class SchoolApi:
             raise StatusCodeError(error_code=status_code)
 
     @classmethod
-    def _get_row_data(cls, json_response: dict, service_name: str) -> dict:
+    def _get_row_data(cls, json_response: dict, service_name: str) -> list[dict]:
         return json_response[service_name][1]["row"]
 
     @classmethod
@@ -63,19 +63,14 @@ class SchoolApi:
         return SchoolInfoResponse(**row[0])
 
     @classmethod
-    async def request_time_table(cls, params: RequestParameters) -> TimeTableResponse[T]:
+    async def request_time_table(cls, params: RequestParameters) -> TimeTableResponse:
         response_type = time_table_classes[params.school_level.name]
-        rows = await cls._request_time_table(params=params, response_type=response_type)
-        return rows
-
-    @classmethod
-    async def _request_time_table(cls, params: RequestParameters, response_type: type[T]) -> TimeTableResponse[T]:
         sub_url = getattr(SubUrl, params.school_level.name)
         rows = await cls._get_requests(url=f"{cls.BASE_URL}{sub_url}",
                                        service_name=sub_url,
                                        params=params)
-
-        return TimeTableResponse([response_type(**row) for row in rows])
+        result = TimeTableResponse([response_type(**row) for row in rows])
+        return result
 
     @classmethod
     async def request_school_schedule(cls, params: RequestParameters) -> SchoolScheduleResponse:

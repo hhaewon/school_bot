@@ -1,14 +1,13 @@
 import asyncio
-from collections.abc import Mapping
-from typing import Any
 
 from discord import Option, ApplicationContext, Embed, Colour, Bot
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
-from consts import TOKEN, KST, client, collection, KEY_NAMES_VALUES
 from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
-    meal_names, utils
+    meal_names, utils, COLLECTION, CLIENT, Schema, Embeds
+from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
+from libs.common.config import conf
 from users import users
 
 bot = Bot()
@@ -20,7 +19,7 @@ async def on_ready():
     print(f'Login bot: {bot.user}')
 
 
-@bot.slash_command(name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.")
+@bot.slash_command(name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def meal_service(context: ApplicationContext,
                        region: Option(str, description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                       choices=region_choices),
@@ -43,37 +42,11 @@ async def meal_service(context: ApplicationContext,
         MMEAL_SC_CODE=str(i),
     ) for i in range(1, 4))
 
-    try:
-        school_info_response = await SchoolApi.request_school_info(params=params[0])
-        for param in params:
-            param.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
-    except StatusCodeError as e:
-        if str(e) == "해당하는 데이터가 없습니다.":
-            await context.followup.send("잘못된 입력입니다.")
-        return
-
-    embed = Embed(title="급식", colour=Colour.random(),
-                  description=f"{school_name}의 {date.strftime('%Y년 %m월 %d일')}의 급식")
-
-    for i, meal_name in enumerate(meal_names[3:]):
-        try:
-            meal_response = await SchoolApi.request_meal_service(params=params[i])
-            cal_info = f"**총 칼로리**: {meal_response.CAL_INFO}"
-            menu_info = "\n".join(meal_response.dish).replace("(", "").replace(")", "")
-            nutrient_of_dish_info = "\n".join(
-                f"{k}: {v.replace('R.E', 'RE')} " for k, v in meal_response.nutrient_info.items())
-            embed.add_field(name=meal_name, value=f"{cal_info}\n\n{menu_info}\n\n**영양정보**\n{nutrient_of_dish_info}")
-        except StatusCodeError as e:
-            if str(e) == "해당하는 데이터가 없습니다.":
-                embed.add_field(name=meal_name, value="없음")
-
-    embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
-    embed.timestamp = now_date
-
+    embed = await Embeds.meal_service(params=params, now_date=now_date, date=date, school_name=school_name)
     await context.followup.send(embed=embed)
 
 
-@bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.')
+@bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.', guild_ids=conf().TEST_GUILD_ID)
 async def time_table(context: ApplicationContext,
                      region: Option(str, description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                     choices=region_choices),
@@ -106,26 +79,18 @@ async def time_table(context: ApplicationContext,
         await context.followup.send("잘못된 입력입니다.")
         return
 
-    embed = Embed(title="시간표", colour=Colour.random(),
-                  description=f"{school_name} {grade}학년 {class_name}반의 {date.strftime('%Y년 %m월 %d일')}의 시간표")
-    try:
-        meal_response = await SchoolApi.request_time_table(params=params)
-        time_table_info = "\n".join(meal_response.time_table)
-        embed.add_field(name="시간표", value=time_table_info)
-    except ValueError:
-        await context.followup.send("잘못된 학교이름입니다.")
-        return
-    except StatusCodeError as e:
-        if str(e) == "해당하는 데이터가 없습니다.":
-            embed.add_field(name="시간표", value="없음")
+    data = {
+        "school_name": school_name,
+        "grade": grade,
+        "class_name": class_name
+    }
 
-    embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/439/439296.png")
-    embed.timestamp = now_date
+    embed = await Embeds.time_table(params=params, data=data, now_date=now_date, date=date)
 
     await context.followup.send(embed=embed)
 
 
-@bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.')
+@bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.', guild_ids=conf().TEST_GUILD_ID)
 async def school_schedule(context: ApplicationContext,
                           region: Option(str, description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                          choices=region_choices),
@@ -159,19 +124,10 @@ async def school_schedule(context: ApplicationContext,
             await context.followup.send("오류가 발생했습니다.")
             return
 
-    try:
-        schedule_response = await SchoolApi.request_school_schedule(params=params)
+    embed = await Embeds.school_schedule(params=params, school_name=school_name, now_date=now_date, from_date=from_date,
+                                         to_date=to_date)
 
-        embed = Embed(title="시간표", colour=Colour.random(),
-                      description=f"{school_name}의 {from_date.strftime('%Y')}~{to_date.strftime('%Y')}의 학사일정")
-        school_schedule_info = "\n".join(f"{day} : {name}" for name, day in schedule_response.schedule.items())
-        embed.add_field(name="학사일정", value=school_schedule_info)
-        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
-        embed.timestamp = now_date
-
-        await context.followup.send(embed=embed)
-    except StatusCodeError:
-        await context.followup.send("잘못된 입력입니다.")
+    await context.followup.send(embed=embed)
 
 
 @tasks.loop(minutes=1.0)
@@ -180,10 +136,10 @@ async def send_notification():
 
     now_time = now_date.strftime("%H:%M")
     now_full_date = now_date.strftime("%Y%m%d")
-    meal_service_datas: Cursor[Mapping[str, Any]]
-    time_table_datas: Cursor[Mapping[str, Any]]
-    school_schedule_datas: Cursor[Mapping[str, Any]]
-    meal_service_datas, time_table_datas, school_schedule_datas = [collection.find(filter={key_name: now_time}) for
+    meal_service_datas: Cursor[Schema]
+    time_table_datas: Cursor[Schema]
+    school_schedule_datas: Cursor[Schema]
+    meal_service_datas, time_table_datas, school_schedule_datas = [COLLECTION.find(filter={key_name: now_time}) for
                                                                    key_name in KEY_NAMES_VALUES]
     for data in meal_service_datas:
         user = await bot.fetch_user(data['id'])
@@ -267,4 +223,4 @@ async def send_notification():
 
 bot.add_application_command(users)
 bot.run(TOKEN)
-client.close()
+CLIENT.close()

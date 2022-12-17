@@ -1,5 +1,5 @@
 from libs.RequestParameters import RequestParameters
-from libs.responses import MealServiceResponse, TimeTableResponse, MiddleTimeTableRow, SchoolScheduleResponse
+from libs.responses import MealServiceResponse, SchoolScheduleResponse, MiddleTimeTableRow
 from libs.SchoolApi import SchoolApi
 from libs.region import get_region_code
 import asyncio
@@ -25,12 +25,14 @@ async def main():
     params.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
 
     meal_service_response: MealServiceResponse
-    time_table_response: TimeTableResponse[MiddleTimeTableRow]
     school_schedule_response: SchoolScheduleResponse
+    time_table_response: MiddleTimeTableRow
+
     meal_service_response, time_table_response, school_schedule_response = await asyncio.gather(
         SchoolApi.request_meal_service(params=params),
         SchoolApi.request_time_table(params=params),
         SchoolApi.request_school_schedule(params=params))
+
     print(meal_service_response)
     print(meal_service_response.ATPT_OFCDC_SC_CODE)
     print(meal_service_response.CAL_INFO)

@@ -6,7 +6,7 @@ from .responses.TimeTableResponse import T, ElementaryTimeTableRow, MiddleTimeTa
 from .SubUrl import SubUrl
 
 
-time_table_classes: dict[SubUrl, type[T]] = {
+time_table_classes: dict[str, type[T]] = {
     SubUrl.ELEMENTARY.name: ElementaryTimeTableRow,
     SubUrl.MIDDLE.name: MiddleTimeTableRow,
     SubUrl.HIGH.name: HighTimeTableRow,
@@ -55,7 +55,7 @@ class RequestParameters:
     AA_YMD: Optional[str] = None
     AA_FROM_YMD: Optional[str] = None
     AA_TO_YMD: Optional[str] = None
-    school_level: str = field(init=False, repr=False)
+    school_level: SubUrl = field(init=False, repr=False)
 
     def asdict_without_None(self) -> dict[str, str]:
         return asdict(self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None})

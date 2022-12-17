@@ -5,3 +5,5 @@ from .SchoolApi import *
 from .StatusCodeError import *
 from .responses import *
 from .utils import *
+from .database import *
+from .embed import *
