@@ -22,5 +22,5 @@ class ProductConfig(Config):
 
 
 def conf():
-    config = dict(produdct=ProductConfig(), local=LocalConfig())
+    config = dict(product=ProductConfig(), local=LocalConfig())
     return config.get(os.environ.get("BOT_ENV", "local"))
