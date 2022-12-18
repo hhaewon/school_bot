@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Sequence
+from typing import Sequence, Any
 
 from discord import Embed, Colour
+from .common.consts import KEY_NAMES
 
 from .responses.MealServiceResponse import meal_names
 from .SchoolApi import SchoolApi
@@ -35,7 +36,7 @@ class Embeds:
         return embed
 
     @classmethod
-    async def time_table(cls, params: RequestParameters, data: dict[str, str], now_date: datetime, date: datetime):
+    async def time_table(cls, params: RequestParameters, data: dict[str, Any], now_date: datetime, date: datetime):
         formatted_date = date.strftime('%Y년 %m월 %d일')
         description = f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {formatted_date}의 시간표"
         embed = Embed(title="시간표", colour=Colour.random(), description=description)
@@ -72,3 +73,19 @@ class Embeds:
         embed.timestamp = now_date
 
         return embed
+
+    @classmethod
+    async def adding_notification(cls, user_name: str, data: dict[str, Any]):
+        embed = Embed(title="설정한 알림들", colour=Colour.random(), description=f"{user_name}의 설정한 알림들")
+
+        for key, value in KEY_NAMES.items():
+            if value in data:
+                embed.add_field(name=key, value=data[value])
+            else:
+                embed.add_field(name=key, value="미지정")
+
+        embed.timestamp = datetime.datetime.now()
+        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
+
+        return embed
+

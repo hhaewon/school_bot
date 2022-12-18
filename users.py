@@ -96,10 +96,10 @@ async def user_delete_information(context: ApplicationContext):
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def users_time_table(context: ApplicationContext,
                            day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+    data = COLLECTION.find_one(filter={'id': context.user.id})
+
     await context.response.defer()
     await asyncio.sleep(0.01)
-
-    data = COLLECTION.find_one(filter={'id': context.user.id})
 
     if data is None:
         await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
@@ -225,25 +225,16 @@ async def add_notification(context: ApplicationContext,
 
 @notification.command(name="확인", description="설정된 알림을 확인합니다.", guild_ids=conf().TEST_GUILD_ID)
 async def check_notifications(context: ApplicationContext):
+    data = COLLECTION.find_one(filter={"id": context.user.id})
+
     await context.response.defer()
     await asyncio.sleep(0.01)
-
-    data = COLLECTION.find_one(filter={"id": context.user.id})
 
     if data is None:
         await context.followup.send("저장된 회원이 아닙니다. 저장을 먼저 해주세요.")
         return
 
-    embed = Embed(title="설정한 알림들", colour=Colour.random(), description=f"{context.user.mention}의 설정한 알림들")
-
-    for key, value in KEY_NAMES.items():
-        if value in data:
-            embed.add_field(name=key, value=data[value])
-        else:
-            embed.add_field(name=key, value="미지정")
-
-    embed.timestamp = datetime.datetime.now()
-    embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
+    embed = await Embeds.adding_notification(user_name=context.user.name, data=data)
 
     await context.followup.send(embed=embed)
 
