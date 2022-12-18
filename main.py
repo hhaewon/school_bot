@@ -1,6 +1,6 @@
 import asyncio
 
-from discord import Option, ApplicationContext, Embed, Colour, Bot
+from discord import Option, ApplicationContext, Bot
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
@@ -160,9 +160,6 @@ async def send_notification():
 
     for data in time_table_datas:
         user = await bot.fetch_user(data['id'])
-        school_name, grade, class_name = data['school_name'], data['grade'], data['class_name']
-        description = f"{school_name} {grade}학년 {class_name}반의 {now_date.strftime('%Y년 %m월 %d일')}의 시간표"
-        embed = Embed(title="시간표", colour=Colour.random(), description=description)
         params = RequestParameters(
             ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
             SCHUL_NM=data["school_name"],
@@ -186,7 +183,7 @@ async def send_notification():
             AA_TO_YMD=to_date.strftime("%Y%m%d"),
         )
 
-        embed = await Embeds.school_schedule(params=params, school_name=school_name, now_date=now_date,
+        embed = await Embeds.school_schedule(params=params, school_name=data["school_name"], now_date=now_date,
                                              from_date=from_date, to_date=to_date)
         await user.send(embed=embed)
 
