@@ -5,7 +5,7 @@ from discord.ext import tasks
 from pymongo.cursor import Cursor
 
 from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
-    meal_names, utils, COLLECTION, CLIENT, Schema, Embeds
+     utils, COLLECTION, CLIENT, Schema, Embeds
 from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
 from libs.common.config import conf
 from users import users
@@ -134,6 +134,9 @@ async def school_schedule(context: ApplicationContext,
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
 
+    if 6 <= now_date.isoweekday():
+        return
+
     now_time = now_date.strftime("%H:%M")
     now_full_date = now_date.strftime("%Y%m%d")
     meal_service_datas: Cursor[Schema]
@@ -151,22 +154,8 @@ async def send_notification():
             MMEAL_SC_CODE=str(i),
         ) for i in range(1, 4))
 
-        description = f"{data['school_name']}의 {now_date.strftime('%Y년 %m월 %d일')}의 급식"
-        embed = Embed(title="급식", colour=Colour.random(), description=description)
-        for i, meal_name in enumerate(meal_names[3:]):
-            try:
-                meal_response = await SchoolApi.request_meal_service(params=params[i])
-                cal_info = f"**총 칼로리**: {meal_response.CAL_INFO}"
-                menu_info = "\n".join(meal_response.dish).replace("(", "").replace(")", "")
-                nutrient_of_dish_info = "\n".join(
-                    f"{k}: {v.replace('R.E', 'RE')} " for k, v in meal_response.nutrient_info.items())
-                embed.add_field(name=meal_name, value=f"{cal_info}\n\n{menu_info}\n\n**영양정보**\n{nutrient_of_dish_info}")
-            except StatusCodeError as e:
-                if e.error_code == "INFO-200":
-                    embed.add_field(name=meal_name, value="없음")
-
-        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
-        embed.timestamp = now_date
+        embed = await Embeds.meal_service(params=params, now_date=now_date, date=now_date,
+                                          school_name=data["school_name"])
         await user.send(embed=embed)
 
     for data in time_table_datas:
@@ -182,16 +171,7 @@ async def send_notification():
             CLASS_NM=str(data["class_name"]),
             ALL_TI_YMD=now_full_date,
         )
-        try:
-            time_table_response = await SchoolApi.request_time_table(params=params)
-            time_table_info = "\n".join(time_table_response.time_table)
-            embed.add_field(name="시간표", value=time_table_info)
-        except StatusCodeError as e:
-            if str(e) == "해당하는 데이터가 없습니다.":
-                embed.add_field(name="시간표", value="없음")
-
-        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/439/439296.png")
-        embed.timestamp = now_date
+        embed = await Embeds.time_table(params=params, data=data, date=now_date, now_date=now_date)
         await user.send(embed=embed)
 
     _, from_date, to_date = utils.get_school_year_date(school_year="올해", timezone_=KST)
@@ -206,18 +186,8 @@ async def send_notification():
             AA_TO_YMD=to_date.strftime("%Y%m%d"),
         )
 
-        schedule_response = await SchoolApi.request_school_schedule(params=params)
-
-        if now_date.strftime("%Y/%m/%d") not in schedule_response:
-            continue
-
-        description = f"{data['school_name']}의 {from_date.strftime('%Y')}~{to_date.strftime('%Y')}의 학사일정"
-        embed = Embed(title="시간표", colour=Colour.random(),
-                      description=description)
-        embed.add_field(name="학사일정", value=schedule_response.schedule2[now_date.strftime("%Y/%m/%d")])
-        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
-        embed.timestamp = now_date
-
+        embed = await Embeds.school_schedule(params=params, school_name=school_name, now_date=now_date,
+                                             from_date=from_date, to_date=to_date)
         await user.send(embed=embed)
 
 

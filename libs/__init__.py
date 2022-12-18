@@ -6,4 +6,4 @@ from .StatusCodeError import *
 from .responses import *
 from .utils import *
 from .database import *
-from .embed import *
+from .Embeds import *

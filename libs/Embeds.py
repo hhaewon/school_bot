@@ -5,7 +5,7 @@ from discord import Embed, Colour
 
 from .responses.MealServiceResponse import meal_names
 from .SchoolApi import SchoolApi
-from .RequestParameters import RequestParameters, time_table_classes
+from .RequestParameters import RequestParameters
 from .StatusCodeError import StatusCodeError
 
 
@@ -35,7 +35,7 @@ class Embeds:
         return embed
 
     @classmethod
-    async def time_table(cls, params: RequestParameters, data: dict[str, str], date: datetime, now_date: datetime):
+    async def time_table(cls, params: RequestParameters, data: dict[str, str], now_date: datetime, date: datetime):
         formatted_date = date.strftime('%Y년 %m월 %d일')
         description = f"{data['school_name']} {data['grade']}학년 {data['class_name']}반의 {formatted_date}의 시간표"
         embed = Embed(title="시간표", colour=Colour.random(), description=description)

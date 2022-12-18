@@ -2,6 +2,7 @@ import json
 
 import aiohttp
 
+
 from .SubUrl import SubUrl
 from .responses.MealServiceResponse import MealServiceResponse
 from .responses.SchoolInfoResponse import SchoolInfoResponse
