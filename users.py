@@ -5,8 +5,13 @@ from discord import SlashCommandGroup, ApplicationContext, Option, Embed, Colour
 
 from libs.common.consts import KST, KEY_NAMES, KEY_NAMES_CHOICES
 from libs.common.config import conf
-from libs import RequestParameters, get_region_code, SchoolApi, StatusCodeError, region_choices, utils, COLLECTION, \
-    Embeds
+from libs.RequestParameters import RequestParameters
+from libs.region import get_region_code, region_choices
+from libs.SchoolApi import SchoolApi
+from libs.StatusCodeError import StatusCodeError
+from libs import utils
+from libs.database import COLLECTION
+from libs.Embeds import Embeds
 
 users = SlashCommandGroup(name="회원", description="정보 저장")
 notification = users.create_subgroup(name="알림", description="알림 설정", guild_ids=conf().TEST_GUILD_ID)
