@@ -141,7 +141,6 @@ async def school_schedule(context: ApplicationContext,
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
 
-    print(now_date.isoweekday())
     if 6 <= now_date.isoweekday():
         return
 
