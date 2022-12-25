@@ -4,10 +4,17 @@ from discord import Option, ApplicationContext, Bot
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
-from libs import RequestParameters, SchoolApi, StatusCodeError, get_region_code, region_choices, \
-     utils, COLLECTION, CLIENT, Schema, Embeds
+from libs.RequestParameters import RequestParameters
+from libs.SchoolApi import SchoolApi
+from libs.StatusCodeError import StatusCodeError
+from libs.region import get_region_code, region_choices
+from libs import utils
+from libs.database import COLLECTION, CLIENT, Schema
+from libs.Embeds import Embeds
+
 from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
 from libs.common.config import conf
+
 from users import users
 
 bot = Bot()
@@ -134,6 +141,7 @@ async def school_schedule(context: ApplicationContext,
 async def send_notification():
     now_date, _ = utils.get_date(day="오늘", timezone_=KST)
 
+    print(now_date.isoweekday())
     if 6 <= now_date.isoweekday():
         return
 
