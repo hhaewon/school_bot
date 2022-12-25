@@ -75,6 +75,24 @@ class Embeds:
         return embed
 
     @classmethod
+    async def school_schedule_notification(cls, params: RequestParameters, school_name: str, now_date: datetime):
+        formatted_now_date = now_date.strftime("%Y/%m/%d")
+        embed = Embed(title="학사일정", colour=Colour.random(), description=f"{school_name}의 오늘의 학사일정")
+        try:
+            school_schedule_response = await SchoolApi.request_school_schedule(params=params)
+            school_schedule_info = school_schedule_response.schedule2[formatted_now_date]
+            embed.add_field(name="학사일정", value=school_schedule_info)
+
+        except StatusCodeError as e:
+            if str(e) == StatusCodeError.errors["INFO-200"]:
+                embed.add_field(name="학사일정", value="없음")
+
+        embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
+        embed.timestamp = now_date
+
+        return embed
+
+    @classmethod
     async def adding_notification(cls, user_name: str, data: dict[str, Any]):
         embed = Embed(title="설정한 알림들", colour=Colour.random(), description=f"{user_name}의 설정한 알림들")
 
@@ -88,4 +106,3 @@ class Embeds:
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
 
         return embed
-

@@ -190,8 +190,8 @@ async def send_notification():
             AA_TO_YMD=to_date.strftime("%Y%m%d"),
         )
 
-        embed = await Embeds.school_schedule(params=params, school_name=data["school_name"], now_date=now_date,
-                                             from_date=from_date, to_date=to_date)
+        embed = await Embeds.school_schedule_notification(params=params, school_name=data["school_name"],
+                                                          now_date=now_date)
         await user.send(embed=embed)
 
 
