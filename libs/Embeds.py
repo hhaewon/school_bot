@@ -104,7 +104,7 @@ class Embeds:
             else:
                 embed.add_field(name=key, value="미지정")
 
-        embed.timestamp = datetime.datetime.now()
+        embed.timestamp = datetime.now()
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/545/545674.png")
 
         return embed
