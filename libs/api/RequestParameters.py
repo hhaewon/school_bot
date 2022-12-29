@@ -2,8 +2,8 @@ import os
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
-from .responses.TimeTableResponse import T, ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow
-from .SubUrl import SubUrl
+from libs.api.responses.TimeTableResponse import T, ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow
+from libs.SubUrl import SubUrl
 
 
 time_table_classes: dict[str, type[T]] = {

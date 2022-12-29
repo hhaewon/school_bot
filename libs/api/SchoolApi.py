@@ -3,13 +3,13 @@ import json
 import aiohttp
 
 
-from .SubUrl import SubUrl
-from .responses.MealServiceResponse import MealServiceResponse
-from .responses.SchoolInfoResponse import SchoolInfoResponse
-from .responses.SchoolScheduleResponse import SchoolScheduleResponse, SchoolScheduleRow
-from .responses.TimeTableResponse import TimeTableResponse
-from .RequestParameters import RequestParameters, time_table_classes
-from .StatusCodeError import StatusCodeError
+from libs.SubUrl import SubUrl
+from libs.api.responses.MealServiceResponse import MealServiceResponse
+from libs.api.responses.SchoolInfoResponse import SchoolInfoResponse
+from libs.api.responses.SchoolScheduleResponse import SchoolScheduleResponse, SchoolScheduleRow
+from libs.api.responses.TimeTableResponse import TimeTableResponse
+from libs.api.RequestParameters import RequestParameters, time_table_classes
+from libs.StatusCodeError import StatusCodeError
 
 
 class SchoolApi:

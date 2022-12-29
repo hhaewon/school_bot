@@ -5,9 +5,9 @@ from discord import SlashCommandGroup, ApplicationContext, Option, Embed, Colour
 
 from libs.common.consts import KST, KEY_NAMES, KEY_NAMES_CHOICES
 from libs.common.config import conf
-from libs.RequestParameters import RequestParameters
+from libs.api.RequestParameters import RequestParameters
 from libs.region import get_region_code, region_choices
-from libs.SchoolApi import SchoolApi
+from libs.api.SchoolApi import SchoolApi
 from libs.StatusCodeError import StatusCodeError
 from libs import utils
 from libs.database import COLLECTION

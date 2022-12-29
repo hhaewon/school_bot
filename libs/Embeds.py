@@ -4,9 +4,9 @@ from typing import Sequence, Any
 from discord import Embed, Colour
 from .common.consts import KEY_NAMES
 
-from .responses.MealServiceResponse import meal_names
-from .SchoolApi import SchoolApi
-from .RequestParameters import RequestParameters
+from libs.api.responses import meal_names
+from libs.api.SchoolApi import SchoolApi
+from libs.api.RequestParameters import RequestParameters
 from .StatusCodeError import StatusCodeError
 
 

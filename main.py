@@ -4,18 +4,17 @@ from discord import Option, ApplicationContext, Bot
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
-from libs.RequestParameters import RequestParameters
-from libs.SchoolApi import SchoolApi
+from libs.api.RequestParameters import RequestParameters
+from libs.api.SchoolApi import SchoolApi
 from libs.StatusCodeError import StatusCodeError
 from libs.region import get_region_code, region_choices
 from libs import utils
 from libs.database import COLLECTION, CLIENT, Schema
 from libs.Embeds import Embeds
-
 from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
 from libs.common.config import conf
-
-from users import users
+from libs.users import users
+from libs.notification import send_meal_service_data, send_time_table_data, send_school_schedule_data
 
 bot = Bot()
 
@@ -136,12 +135,8 @@ async def school_schedule(context: ApplicationContext,
         school_response = await SchoolApi.request_school_info(params=params)
         params.SD_SCHUL_CODE = school_response.SD_SCHUL_CODE
     except StatusCodeError as e:
-        if str(e) == "해당하는 데이터가 없습니다.":
-            await context.followup.send("잘못된 입력입니다.")
-            return
-        else:
-            await context.followup.send("오류가 발생했습니다.")
-            return
+        await context.followup.send("잘못된 입력입니다.")
+        return
 
     embed = await Embeds.school_schedule(params=params, school_name=school_name, now_date=now_date, from_date=from_date,
                                          to_date=to_date)
@@ -157,55 +152,18 @@ async def send_notification():
         return
 
     now_time = now_date.strftime("%H:%M")
-    now_full_date = now_date.strftime("%Y%m%d")
+    _, from_date, to_date = utils.get_school_year_date(school_year="올해", timezone_=KST)
     meal_service_datas: Cursor[Schema]
     time_table_datas: Cursor[Schema]
     school_schedule_datas: Cursor[Schema]
     meal_service_datas, time_table_datas, school_schedule_datas = [COLLECTION.find(filter={key_name: now_time}) for
                                                                    key_name in KEY_NAMES_VALUES]
-    for data in meal_service_datas:
-        user = await bot.fetch_user(data['id'])
-        params = tuple(RequestParameters(
-            ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
-            SCHUL_NM=data["school_name"],
-            SD_SCHUL_CODE=data["school_code"],
-            MLSV_YMD=now_full_date,
-            MMEAL_SC_CODE=str(i),
-        ) for i in range(1, 4))
-
-        embed = await Embeds.meal_service(params=params, now_date=now_date, date=now_date,
-                                          school_name=data["school_name"])
-        await user.send(embed=embed)
-
-    for data in time_table_datas:
-        user = await bot.fetch_user(data['id'])
-        params = RequestParameters(
-            ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
-            SCHUL_NM=data["school_name"],
-            SD_SCHUL_CODE=data["school_code"],
-            GRADE=str(data["grade"]),
-            CLASS_NM=str(data["class_name"]),
-            ALL_TI_YMD=now_full_date,
-        )
-        embed = await Embeds.time_table(params=params, data=data, date=now_date, now_date=now_date)
-        await user.send(embed=embed)
-
-    _, from_date, to_date = utils.get_school_year_date(school_year="올해", timezone_=KST)
-    for data in school_schedule_datas:
-        user = await bot.fetch_user(data['id'])
-
-        params = RequestParameters(
-            ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
-            SCHUL_NM=data["school_name"],
-            SD_SCHUL_CODE=data["school_code"],
-            AA_FROM_YMD=from_date.strftime("%Y%m%d"),
-            AA_TO_YMD=to_date.strftime("%Y%m%d"),
-        )
-
-        embed = await Embeds.school_schedule_notification(params=params, school_name=data["school_name"],
-                                                          now_date=now_date)
-        await user.send(embed=embed)
-
+    await asyncio.gather(
+        asyncio.gather(*(send_meal_service_data(bot, data, now_date) for data in meal_service_datas)),
+        asyncio.gather(*(send_time_table_data(bot, data, now_date) for data in time_table_datas)),
+        asyncio.gather(
+            *(send_school_schedule_data(bot, data, from_date, to_date, now_date) for data in school_schedule_datas))
+    )
 
 bot.add_application_command(users)
 bot.run(TOKEN)
