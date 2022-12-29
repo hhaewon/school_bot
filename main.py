@@ -42,6 +42,10 @@ async def meal_service(context: ApplicationContext,
         await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
         return
 
+    if not school_name.endswith("초등학교") and not school_name.endswith("중학교") and not school_name.endswith("고등학교"):
+        await context.followup.send("잘못된 학교명입니다.")
+        return
+
     params = tuple(RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code(region),
         SCHUL_NM=school_name,
@@ -69,6 +73,10 @@ async def time_table(context: ApplicationContext,
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
         await context.followup.send("잘못된 날짜 형식입니다. 연도-월-일 형식으로 입력해주세요.")
+        return
+
+    if not school_name.endswith("초등학교") and not school_name.endswith("중학교") and not school_name.endswith("고등학교"):
+        await context.followup.send("잘못된 학교명입니다.")
         return
 
     params = RequestParameters(
@@ -111,6 +119,10 @@ async def school_schedule(context: ApplicationContext,
         now_date, from_date, to_date = utils.get_school_year_date(school_year=school_year, timezone_=KST)
     except ValueError:
         await context.followup.send("잘못된 연도 형식입니다. 연도 형식으로 입력해주세요 (예 2022, 2010)")
+        return
+
+    if not school_name.endswith("초등학교") and not school_name.endswith("중학교") and not school_name.endswith("고등학교"):
+        await context.followup.send("잘못된 학교명입니다.")
         return
 
     params = RequestParameters(

@@ -86,6 +86,8 @@ class Embeds:
         except StatusCodeError as e:
             if str(e) == StatusCodeError.errors["INFO-200"]:
                 embed.add_field(name="학사일정", value="없음")
+        except KeyError:
+            embed.add_field(name="학사일정", value="없음")
 
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png")
         embed.timestamp = now_date

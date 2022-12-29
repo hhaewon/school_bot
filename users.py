@@ -25,6 +25,10 @@ async def users_save_information(context: ApplicationContext,
                                  grade: Option(int, description="저장할 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
                                                choices=[1, 2, 3, 4, 5, 6]),
                                  class_name: Option(int, description="저장할 반", name="반")):
+    if not school_name.endswith("초등학교") and not school_name.endswith("중학교") and not school_name.endswith("고등학교"):
+        await context.followup.send("잘못된 학교명입니다.")
+        return
+
     params = RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code(region),
         SCHUL_NM=school_name,
