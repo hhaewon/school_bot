@@ -29,10 +29,11 @@ class Embeds:
             except StatusCodeError as e:
                 if str(e) == StatusCodeError.errors["INFO-200"]:
                     embed.add_field(name=meal_name, value="없음")
+                else:
+                    print(e)
 
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png")
         embed.timestamp = now_date
-
         return embed
 
     @classmethod

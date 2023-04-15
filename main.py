@@ -34,7 +34,6 @@ async def meal_service(context: ApplicationContext,
                                    name="날짜")):
     await context.response.defer()
     await asyncio.sleep(0)
-
     try:
         now_date, date = utils.get_date(day=day, timezone_=KST)
     except ValueError:
@@ -45,12 +44,20 @@ async def meal_service(context: ApplicationContext,
         await context.followup.send("잘못된 학교명입니다.")
         return
 
-    params = tuple(RequestParameters(
+    params = [RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code(region),
         SCHUL_NM=school_name,
         MLSV_YMD=date.strftime("%Y%m%d"),
         MMEAL_SC_CODE=str(i),
-    ) for i in range(1, 4))
+    ) for i in range(1, 4)]
+
+    try:
+        school_response = await SchoolApi.request_school_info(params=params[0])
+        for param in params:
+            param.SD_SCHUL_CODE = school_response.SD_SCHUL_CODE
+    except StatusCodeError:
+        await context.followup.send("잘못된 입력입니다.")
+        return
 
     embed = await Embeds.meal_service(params=params, now_date=now_date, date=date, school_name=school_name)
     await context.followup.send(embed=embed)
@@ -164,6 +171,7 @@ async def send_notification():
         asyncio.gather(
             *(send_school_schedule_data(bot, data, from_date, to_date, now_date) for data in school_schedule_datas))
     )
+
 
 bot.add_application_command(users)
 bot.run(TOKEN)
