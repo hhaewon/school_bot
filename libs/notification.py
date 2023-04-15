@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import discord
 from discord import Bot
 from libs.Embeds import Embeds
 from libs.api.RequestParameters import RequestParameters
@@ -18,7 +19,10 @@ async def send_meal_service_data(bot: Bot, data: Schema, now_date: datetime):
     ) for i in range(1, 4))
 
     embed = await Embeds.meal_service(params=params, now_date=now_date, date=now_date, school_name=data["school_name"])
-    await user.send(embed=embed)
+    try:
+        await user.send(embed=embed)
+    except discord.Forbidden:
+        pass
 
 
 async def send_time_table_data(bot: Bot, data: Schema, now_date: datetime):
@@ -32,7 +36,10 @@ async def send_time_table_data(bot: Bot, data: Schema, now_date: datetime):
         ALL_TI_YMD=now_date.strftime("%Y%m%d"),
     )
     embed = await Embeds.time_table(params=params, data=data, date=now_date, now_date=now_date)
-    await user.send(embed=embed)
+    try:
+        await user.send(embed=embed)
+    except discord.Forbidden:
+        pass
 
 
 async def send_school_schedule_data(bot: Bot, data: Schema, from_date: datetime, to_date: datetime, now_date: datetime):
@@ -47,4 +54,7 @@ async def send_school_schedule_data(bot: Bot, data: Schema, from_date: datetime,
     )
 
     embed = await Embeds.school_schedule_notification(params=params, school_name=data["school_name"], now_date=now_date)
-    await user.send(embed=embed)
+    try:
+        await user.send(embed=embed)
+    except discord.Forbidden:
+        pass
