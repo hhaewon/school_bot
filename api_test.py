@@ -15,9 +15,9 @@ async def main():
     params = RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code("강원"),
         SCHUL_NM="반곡중학교",
-        MLSV_YMD="20221011",
+        MLSV_YMD="20230324",
         MMEAL_SC_CODE="2",
-        ALL_TI_YMD="20221104",
+        ALL_TI_YMD="20230324",
         GRADE="1",
         CLASS_NM="4",
         AA_FROM_YMD="202103",
@@ -30,14 +30,9 @@ async def main():
     school_info_response = await SchoolApi.request_school_info(params=school_params)
     params.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
 
-    meal_service_response: MealServiceResponse
-    school_schedule_response: SchoolScheduleResponse
-    time_table_response: MiddleTimeTableRow
-
-    meal_service_response, time_table_response, school_schedule_response = await asyncio.gather(
-        SchoolApi.request_meal_service(params=params),
-        SchoolApi.request_time_table(params=params),
-        SchoolApi.request_school_schedule(params=params))
+    meal_service_response: MealServiceResponse = await SchoolApi.request_meal_service(params=params)
+    school_schedule_response: SchoolScheduleResponse = await SchoolApi.request_time_table(params=params)
+    time_table_response: MiddleTimeTableRow = await SchoolApi.request_school_schedule(params=params)
 
     print(meal_service_response)
     print(meal_service_response.ATPT_OFCDC_SC_CODE)
@@ -59,4 +54,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.get_event_loop().run_until_complete(main())

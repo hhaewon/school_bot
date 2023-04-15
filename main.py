@@ -115,7 +115,7 @@ async def time_table(context: ApplicationContext,
 async def school_schedule(context: ApplicationContext,
                           region: Option(str, description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)", name="지역명",
                                          choices=region_choices),
-                          school_name: Option(str, "학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"),
+                          school_name: Option(str, description="학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"),
                           school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
                                               name="학년도")):
     await context.response.defer()
