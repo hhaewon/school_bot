@@ -12,6 +12,7 @@ from libs.StatusCodeError import StatusCodeError
 from libs import utils
 from libs.database import COLLECTION
 from libs.Embeds import Embeds
+from typing_extensions import Annotated
 
 users = SlashCommandGroup(name="회원", description="정보 저장")
 notification = users.create_subgroup(name="알림", description="알림 설정", guild_ids=conf().TEST_GUILD_ID)
@@ -19,12 +20,15 @@ notification = users.create_subgroup(name="알림", description="알림 설정",
 
 @users.command(name="저장", description="정보를 저장합니다.", guild_ids=conf().TEST_GUILD_ID)
 async def users_save_information(context: ApplicationContext,
-                                 region: Option(str, description="저장할 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
-                                                choices=region_choices),
-                                 school_name: Option(str, description="저장할 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
-                                 grade: Option(int, description="저장할 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
-                                               choices=[1, 2, 3, 4, 5, 6]),
-                                 class_name: Option(int, description="저장할 반", name="반")):
+                                 region: Annotated[
+                                     str, Option(str, description="저장할 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
+                                                 choices=region_choices)],
+                                 school_name: Annotated[
+                                     str, Option(str, description="저장할 학교명 (예: 반곡중학교, 강남중학교)", name="학교명")],
+                                 grade: Annotated[
+                                     int, Option(int, description="저장할 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
+                                                 choices=[1, 2, 3, 4, 5, 6])],
+                                 class_name: Annotated[int, Option(int, description="저장할 반", name="반")]):
     if not school_name.endswith("초등학교") and not school_name.endswith("중학교") and not school_name.endswith("고등학교"):
         await context.followup.send("잘못된 학교명입니다.")
         return
@@ -104,7 +108,8 @@ async def user_delete_information(context: ApplicationContext):
 
 @users.command(name="시간표", description="저장된 정보로 시간표를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def users_time_table(context: ApplicationContext,
-                           day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                           day: Annotated[
+                               str, Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")]):
     data = COLLECTION.find_one(filter={'id': context.user.id})
 
     await context.response.defer()
@@ -136,7 +141,8 @@ async def users_time_table(context: ApplicationContext,
 
 @users.command(name="급식", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def users_meal_service(context: ApplicationContext,
-                             day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                             day: Annotated[
+                                 str, Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")]):
     data = COLLECTION.find_one(filter={'id': context.user.id})
 
     await context.response.defer()
@@ -167,9 +173,9 @@ async def users_meal_service(context: ApplicationContext,
 
 @users.command(name="학사일정", description="저장된 정보로 급식 정보를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def users_school_schedule(context: ApplicationContext,
-                                school_year: Option(str,
-                                                    description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
-                                                    name="학년도")
+                                school_year: Annotated[
+                                    str, Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
+                                                name="학년도")]
                                 ):
     data = COLLECTION.find_one(filter={'id': context.user.id})
 
