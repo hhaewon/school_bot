@@ -15,6 +15,7 @@ from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
 from libs.common.config import conf
 from libs.users import users
 from libs.notification import send_meal_service_data, send_time_table_data, send_school_schedule_data
+from typing_extensions import Annotated
 
 bot = Bot()
 
@@ -27,11 +28,12 @@ async def on_ready():
 
 @bot.slash_command(name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID)
 async def meal_service(context: ApplicationContext,
-                       region: Option(str, description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
-                                      choices=region_choices),
-                       school_name: Option(str, description="급식 정보를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
-                       day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 급식 정보를 가져올 날짜",
-                                   name="날짜")):
+                       region: Annotated[str, Option(str, description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
+                                                     choices=region_choices)],
+                       school_name: Annotated[
+                           str, Option(str, description="급식 정보를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명")],
+                       day: Annotated[
+                           str, Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 급식 정보를 가져올 날짜", name="날짜")]):
     await context.response.defer()
     await asyncio.sleep(0)
 
@@ -58,13 +60,14 @@ async def meal_service(context: ApplicationContext,
 
 @bot.slash_command(name="시간표", description='지정된 날짜의 시간표를 가져옵니다.', guild_ids=conf().TEST_GUILD_ID)
 async def time_table(context: ApplicationContext,
-                     region: Option(str, description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
-                                    choices=region_choices),
-                     school_name: Option(str, description="시간표를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
-                     grade: Option(int, description="시간표를 가져올 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
-                                   choices=[1, 2, 3, 4, 5, 6]),
-                     class_name: Option(int, description="시간표를 가져올 반", name="반"),
-                     day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")):
+                     region: Annotated[str, Option(str, description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)", name="지역명",
+                                                   choices=region_choices)],
+                     school_name: Annotated[str, Option(str, description="시간표를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명")],
+                     grade: Annotated[int, Option(int, description="시간표를 가져올 학년 (1, 2, 3, 4, 5, 6 중 하나)", name="학년",
+                                                  choices=[1, 2, 3, 4, 5, 6])],
+                     class_name: Annotated[int, Option(int, description="시간표를 가져올 반", name="반")],
+                     day: Annotated[
+                         str, Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜")]):
     await context.response.defer()
     await asyncio.sleep(0)
 
@@ -106,11 +109,13 @@ async def time_table(context: ApplicationContext,
 
 @bot.slash_command(name="학사일정", description='지정된 학년도의 학사일정을 가져옵니다.', guild_ids=conf().TEST_GUILD_ID)
 async def school_schedule(context: ApplicationContext,
-                          region: Option(str, description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)", name="지역명",
-                                         choices=region_choices),
-                          school_name: Option(str, "학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"),
-                          school_year: Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
-                                              name="학년도")):
+                          region: Annotated[str, Option(str, description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)", name="지역명",
+                                                        choices=region_choices)],
+                          school_name: Annotated[
+                              str, Option(str, description="학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명")],
+                          school_year: Annotated[
+                              str, Option(str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)",
+                                          name="학년도")]):
     await context.response.defer()
     await asyncio.sleep(0)
 
@@ -164,6 +169,7 @@ async def send_notification():
         asyncio.gather(
             *(send_school_schedule_data(bot, data, from_date, to_date, now_date) for data in school_schedule_datas))
     )
+
 
 bot.add_application_command(users)
 bot.run(TOKEN)
