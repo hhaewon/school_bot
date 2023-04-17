@@ -5,23 +5,24 @@ meal_names = ["아침", "점심", "저녁", "조식", "중식", "석식"]
 @dataclass(kw_only=True, slots=True)
 class MealServiceResponse:
     """
-    ATPT_OFCDC_SC_CODE: 시도교육청코드\n
-    ATPT_OFCDC_SC_NM: 시도교육청명\n
-    SD_SCHUL_CODE: 표준학교코드\n
-    SCHUL_NM: 학교명\n
-    MMEAL_SC_CODE: 식사코드\n
-    MMEAL_SC_NM: 식사명\n
-    MLSV_YMD: 급식일자\n
-    MLSV_FGR: 급식인원수\n
-    DDISH_NM: 요리명\n
-    ORPLC_INFO: 원산지정보\n
-    CAL_INFO: 칼로리정보\n
-    NTR_INFO: 영양정보\n
-    MLSV_FROM_YMD: 급식시작일자\n
-    MLSV_TO_YMD: 급식종료일자\n
-    dish: 요리명 리스트\n
-    country_of_origin_info: 원산지 정보 딕셔너리\n
-    nutrient_info: 영양 정보 딕셔너리\n
+    Attributes:
+        ATPT_OFCDC_SC_CODE: 시도교육청코드\n
+        ATPT_OFCDC_SC_NM: 시도교육청명\n
+        SD_SCHUL_CODE: 표준학교코드\n
+        SCHUL_NM: 학교명\n
+        MMEAL_SC_CODE: 식사코드\n
+        MMEAL_SC_NM: 식사명\n
+        MLSV_YMD: 급식일자\n
+        MLSV_FGR: 급식인원수\n
+        DDISH_NM: 요리명\n
+        ORPLC_INFO: 원산지정보\n
+        CAL_INFO: 칼로리정보\n
+        NTR_INFO: 영양정보\n
+        MLSV_FROM_YMD: 급식시작일자\n
+        MLSV_TO_YMD: 급식종료일자\n
+        dish: 요리명 리스트\n
+        country_of_origin_info: 원산지 정보 딕셔너리\n
+        nutrient_info: 영양 정보 딕셔너리\n
     """
     ATPT_OFCDC_SC_CODE: str
     ATPT_OFCDC_SC_NM: str

@@ -7,18 +7,19 @@ from typing import Generic, TypeVar, Sequence
 @dataclass(kw_only=True, slots=True)
 class ElementaryTimeTableRow:
     """
-    ATPT_OFCDC_SC_CODE: 시도교육청코드\n
-    ATPT_OFCDC_SC_NM: 시도교육청명\n
-    SD_SCHUL_CODE: 표준학교코드\n
-    SCHUL_NM: 학교명\n
-    AY: 학년도\n
-    SEM: 학기\n
-    ALL_TI_YMD: 시간표일자\n
-    GRADE: 학년\n
-    CLASS_NM: 반명\n
-    PERIO: 교시\n
-    ITRT_CNTNT: 수업내용\n
-    LOAD_DTM: 수정일\n
+    Attributes:
+        ATPT_OFCDC_SC_CODE: 시도교육청코드\n
+        ATPT_OFCDC_SC_NM: 시도교육청명\n
+        SD_SCHUL_CODE: 표준학교코드\n
+        SCHUL_NM: 학교명\n
+        AY: 학년도\n
+        SEM: 학기\n
+        ALL_TI_YMD: 시간표일자\n
+        GRADE: 학년\n
+        CLASS_NM: 반명\n
+        PERIO: 교시\n
+        ITRT_CNTNT: 수업내용\n
+        LOAD_DTM: 수정일\n
     """
     ATPT_OFCDC_SC_CODE: str
     ATPT_OFCDC_SC_NM: str
@@ -37,19 +38,20 @@ class ElementaryTimeTableRow:
 @dataclass(kw_only=True, slots=True)
 class MiddleTimeTableRow:
     """
-    ATPT_OFCDC_SC_CODE: 시도교육청코드
-    ATPT_OFCDC_SC_NM: 시도교육청명
-    SD_SCHUL_CODE: 표준학교코드
-    SCHUL_NM: 학교명
-    AY: 학년도
-    SEM: 학기
-    ALL_TI_YMD: 시간표일자
-    DGHT_CRSE_SC_NM: 주야과정명
-    GRADE: 학년
-    CLASS_NM: 반명
-    PERIO: 교시
-    ITRT_CNTNT: 수업내용
-    LOAD_DTM: 수정일
+    Attributes:
+        ATPT_OFCDC_SC_CODE: 시도교육청코드
+        ATPT_OFCDC_SC_NM: 시도교육청명
+        SD_SCHUL_CODE: 표준학교코드
+        SCHUL_NM: 학교명
+        AY: 학년도
+        SEM: 학기
+        ALL_TI_YMD: 시간표일자
+        DGHT_CRSE_SC_NM: 주야과정명
+        GRADE: 학년
+        CLASS_NM: 반명
+        PERIO: 교시
+        ITRT_CNTNT: 수업내용
+        LOAD_DTM: 수정일
     """
     ATPT_OFCDC_SC_CODE: str
     ATPT_OFCDC_SC_NM: str
@@ -69,22 +71,23 @@ class MiddleTimeTableRow:
 @dataclass(kw_only=True, slots=True)
 class HighTimeTableRow:
     """
-    ATPT_OFCDC_SC_CODE: 시도교육청코드
-    ATPT_OFCDC_SC_NM: 시도교육청명
-    SD_SCHUL_CODE: 표준학교코드
-    SCHUL_NM: 학교명
-    AY: 학년도
-    SEM: 학기
-    ALL_TI_YMD: 시간표일자
-    DGHT_CRSE_SC_NM: 주야과정명
-    ORD_SC_NM: 계열명
-    DDDEP_NM: 학과명
-    GRADE: 학년
-    CLRM_NM: 강의실명
-    CLASS_NM: 반명
-    PERIO: 교시
-    ITRT_CNTNT: 수업내용
-    LOAD_DTM: 수정일
+    Attributes:
+        ATPT_OFCDC_SC_CODE: 시도교육청코드
+        ATPT_OFCDC_SC_NM: 시도교육청명
+        SD_SCHUL_CODE: 표준학교코드
+        SCHUL_NM: 학교명
+        AY: 학년도
+        SEM: 학기
+        ALL_TI_YMD: 시간표일자
+        DGHT_CRSE_SC_NM: 주야과정명
+        ORD_SC_NM: 계열명
+        DDDEP_NM: 학과명
+        GRADE: 학년
+        CLRM_NM: 강의실명
+        CLASS_NM: 반명
+        PERIO: 교시
+        ITRT_CNTNT: 수업내용
+        LOAD_DTM: 수정일
     """
     ATPT_OFCDC_SC_CODE: str
     ATPT_OFCDC_SC_NM: str
@@ -104,7 +107,7 @@ class HighTimeTableRow:
     LOAD_DTM: str
 
 
-T = TypeVar('TimeTableRow', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
+T = TypeVar('T', ElementaryTimeTableRow, MiddleTimeTableRow, HighTimeTableRow)
 
 
 class TimeTableResponse(Generic[T]):

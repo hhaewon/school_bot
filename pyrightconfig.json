@@ -1,0 +1,6 @@
+{
+    "reportUnknownMemberType": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportUnknownParameterType": "none",
+    "reportUnknownArgumentType": "none"
+}
