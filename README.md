@@ -1,7 +1,7 @@
 # School Bot: School Discord Bot
 
 School Lunch, Time Table, School Schedule and Notification  
-[Overview](#overview) • [Installation](#installation) • [Prerequisities](#📋-prerequisites) • [Getting Start](#📝-getting-started) • [Community](#📝-join-the-community)
+[Overview](#overview) • [Installation](#installation) • [Prerequisities](#-prerequisites) • [Getting Start](#-getting-started) • [Community](#-join-the-community)
 
 ## Overview
 
