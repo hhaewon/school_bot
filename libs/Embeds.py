@@ -26,26 +26,30 @@ class Embeds:
         for i, meal_name in enumerate(meal_names[3:]):
             try:
                 meal_response = await SchoolApi.request_meal_service(params=params[i])
-                cal_info = f"**총 칼로리**: {meal_response.CAL_INFO}"
-                menu_info = (
-                    "\n".join(meal_response.dish).replace("(", "").replace(")", "")
-                )
-                nutrient_of_dish_info = "\n".join(
-                    f"{k}: {v.replace('R.E', 'RE')} "
-                    for k, v in meal_response.nutrient_info.items()
-                )
+                value = ""
+                if meal_response.CAL_INFO:
+                    cal_info = f"**총 칼로리**: {meal_response.CAL_INFO}"
+                    value += cal_info + "\n\n"
+                if meal_response.dish:
+                    menu_info = (
+                        "\n".join(meal_response.dish).replace("(", "").replace(")", "")
+                    )
+                    value += menu_info + "\n\n"
+                if meal_response.nutrient_info:
+                    nutrient_of_dish_info = "\n".join(
+                        f"{k}: {v.replace('R.E', 'RE')} "
+                        for k, v in meal_response.nutrient_info.items()
+                    )
+                    value += "**영양정보**\n" + nutrient_of_dish_info
                 embed.add_field(
                     name=meal_name,
-                    value=f"{cal_info}\n\n{menu_info}\n\n**영양정보**\n{nutrient_of_dish_info}",
+                    value=value,
                 )
             except StatusCodeError as e:
                 if str(e) == StatusCodeError.errors["INFO-200"]:
                     embed.add_field(name=meal_name, value="없음")
                 else:
-                    print(e)
-        print(embed.fields)
-        print()
-
+                    print(str(e))
         embed.set_thumbnail(
             url="https://cdn-icons-png.flaticon.com/512/2771/2771406.png"
         )
@@ -71,6 +75,8 @@ class Embeds:
         except StatusCodeError as e:
             if str(e) == StatusCodeError.errors["INFO-200"]:
                 embed.add_field(name="시간표", value="없음")
+            else:
+                print(str(e))
 
         embed.set_thumbnail(url="https://cdn-icons-png.flaticon.com/512/439/439296.png")
         embed.timestamp = now_date
@@ -105,6 +111,8 @@ class Embeds:
         except StatusCodeError as e:
             if str(e) == StatusCodeError.errors["INFO-200"]:
                 embed.add_field(name="학사일정", value="조회 안됨")
+            else:
+                print(str(e))
 
         embed.set_thumbnail(
             url="https://cdn-icons-png.flaticon.com/512/2602/2602414.png"

@@ -60,7 +60,7 @@ async def users_save_information(context: ApplicationContext,
             COLLECTION.update_one(filter={'id': context.user.id}, update=new_values)
         await context.followup.send("저장을 완료했습니다.")
     except Exception as e:
-        print(e)
+        print(str(e))
         await context.followup.send("저장 중 오류가 발생했습니다.")
 
 
@@ -159,7 +159,7 @@ async def users_meal_service(context: ApplicationContext,
         MLSV_YMD=date.strftime("%Y%m%d"),
         MMEAL_SC_CODE=str(i),
     ) for i in range(1, 4))
-
+    
     embed = await Embeds.meal_service(params=params, now_date=now_date, date=date, school_name=data["school_name"])
 
     await context.followup.send(embed=embed)
@@ -219,7 +219,7 @@ async def add_notification(context: ApplicationContext,
         entered_datetime = datetime.datetime.strptime(time, "%H:%M")
         time_argument = entered_datetime.strftime("%H:%M")
     except Exception as e:
-        print(e)
+        print(str(e))
         await context.followup.send("잘못된 시각 형식입니다. 시간:분 형식으로 입력해주세요.")
         return
 

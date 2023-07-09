@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 
 from discord import Embed, Option, ApplicationContext, Bot, Intents
 from discord.ext import tasks
@@ -8,7 +9,6 @@ from libs.api.RequestParameters import RequestParameters
 from libs.api.SchoolApi import SchoolApi
 from libs.StatusCodeError import StatusCodeError
 from libs.region import get_region_code, region_choices
-from libs import utils
 from libs.database import COLLECTION, CLIENT, Schema
 from libs.Embeds import Embeds
 from libs.common.consts import TOKEN, KST, KEY_NAMES_VALUES
@@ -250,7 +250,20 @@ async def send_notification():
         ),
     )
 
-
+@tasks.loop(time=datetime.time(hour=6, tzinfo=KST))
+async def adjust_school_code():
+    datas = COLLECTION.find({})
+    
+    for data in datas:
+        params = RequestParameters(
+            ATPT_OFCDC_SC_CODE=get_region_code(data['region']),
+            SCHUL_NM=data['school_name'],
+        )
+        school_response = await SchoolApi.request_school_info(params=params)
+        
+        new_data = {"school_code": school_response.SD_SCHUL_CODE}
+        COLLECTION.update_one(filter={'id':data['id']}, update={"$set": new_data})
+    
 bot.add_application_command(users)
 bot.run(TOKEN)
 CLIENT.close()

@@ -41,7 +41,7 @@ class SchoolApi:
     @classmethod
     def _check_status_code(cls, status_code: str) -> None:
         if status_code == "INFO-000":
-            return
+            return 
         else:
             raise StatusCodeError(error_code=status_code)
 

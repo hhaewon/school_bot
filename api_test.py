@@ -13,21 +13,21 @@ from pymongo.cursor import Cursor
 
 async def main():
     params = RequestParameters(
-        ATPT_OFCDC_SC_CODE=get_region_code("강원"),
-        SCHUL_NM="반곡중학교",
-        MLSV_YMD="20230324",
+        ATPT_OFCDC_SC_CODE=get_region_code("서울"),
+        SCHUL_NM="강남중학교",
+        MLSV_YMD="20230707",
         MMEAL_SC_CODE="2",
-        ALL_TI_YMD="20230324",
+        ALL_TI_YMD="20230707",
         GRADE="1",
-        CLASS_NM="4",
-        AA_FROM_YMD="202103",
-        AA_TO_YMD="202203"
+        CLASS_NM="1",
+        AA_FROM_YMD="20230707",
+        AA_TO_YMD="20230707"
     )
     school_params = RequestParameters(
         ATPT_OFCDC_SC_CODE=get_region_code("강원"),
         SCHUL_NM="반곡중학교",
     )
-    school_info_response = await SchoolApi.request_school_info(params=school_params)
+    school_info_response = await SchoolApi.request_school_info(params=params)
     params.SD_SCHUL_CODE = school_info_response.SD_SCHUL_CODE
 
     meal_service_response: MealServiceResponse = await SchoolApi.request_meal_service(params=params)
@@ -54,4 +54,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())

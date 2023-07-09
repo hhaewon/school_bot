@@ -54,17 +54,17 @@ class MealServiceResponse:
 
     @property
     def nutrient_info(self):
-        nutrient_info_list = self.NTR_INFO.split("\n")
-        nutrient_info_dict = dict()
-        for nutrient_info in nutrient_info_list:
-            parentheses_start_index = nutrient_info.index("(")
-            parentheses_end_index = nutrient_info.index(")")
-            unit = nutrient_info[parentheses_start_index + 1:parentheses_end_index]
-            nutrient = nutrient_info[:parentheses_start_index]
-            degree = nutrient_info.split(": ")[-1]
-            nutrient_info_dict[nutrient] = f"{degree}{unit}"
-
-        return nutrient_info_dict
+        if self.NTR_INFO:
+            nutrient_info_list = self.NTR_INFO.split("\n")
+            nutrient_info_dict = dict()
+            for nutrient_info in nutrient_info_list:
+                parentheses_start_index = nutrient_info.index("(")
+                parentheses_end_index = nutrient_info.index(")")
+                unit = nutrient_info[parentheses_start_index + 1:parentheses_end_index]
+                nutrient = nutrient_info[:parentheses_start_index]
+                degree = nutrient_info.split(": ")[-1]
+                nutrient_info_dict[nutrient] = f"{degree}{unit}"
+            return nutrient_info_dict
 
     def __post_init__(self):
         chars_to_remove = "1234567890()."
