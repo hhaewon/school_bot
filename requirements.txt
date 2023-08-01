@@ -14,7 +14,7 @@ py-cord==2.3.2
 pymata-aio==2.35
 pymongo==4.3.3
 pyserial==3.5
-requests==2.28.1
+requests==2.31.0
 tomli==2.0.1
 typing_extensions==4.4.0
 urllib3==1.26.13
