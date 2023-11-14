@@ -5,6 +5,7 @@ from discord import Embed, Option, ApplicationContext, Bot, Intents
 from discord.ext import tasks
 from pymongo.cursor import Cursor
 
+from libs import utils
 from libs.api.RequestParameters import RequestParameters
 from libs.api.SchoolApi import SchoolApi
 from libs.StatusCodeError import StatusCodeError
@@ -35,19 +36,19 @@ async def on_ready():
     name="급식", description="지정된 날짜의 급식 정보를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID
 )
 async def meal_service(
-        context: ApplicationContext,
-        region: Option(
-            str,
-            description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)",
-            name="지역명",
-            choices=region_choices,
-        ),
-        school_name: Option(
-            str, description="급식 정보를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"
-        ),
-        day: Option(
-            str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 급식 정보를 가져올 날짜", name="날짜"
-        ),
+    context: ApplicationContext,
+    region: Option(
+        str,
+        description="급식 정보를 가져올 지역명 (예: 강원, 경기, 서울, 충북)",
+        name="지역명",
+        choices=region_choices,
+    ),
+    school_name: Option(
+        str, description="급식 정보를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"
+    ),
+    day: Option(
+        str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 급식 정보를 가져올 날짜", name="날짜"
+    ),
 ):
     await context.response.defer()
     await asyncio.sleep(0)
@@ -58,9 +59,9 @@ async def meal_service(
         return
 
     if (
-            not school_name.endswith("초등학교")
-            and not school_name.endswith("중학교")
-            and not school_name.endswith("고등학교")
+        not school_name.endswith("초등학교")
+        and not school_name.endswith("중학교")
+        and not school_name.endswith("고등학교")
     ):
         await context.followup.send("잘못된 학교명입니다.")
         return
@@ -93,22 +94,22 @@ async def meal_service(
     name="시간표", description="지정된 날짜의 시간표를 가져옵니다.", guild_ids=conf().TEST_GUILD_ID
 )
 async def time_table(
-        context: ApplicationContext,
-        region: Option(
-            str,
-            description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)",
-            name="지역명",
-            choices=region_choices,
-        ),
-        school_name: Option(str, description="시간표를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
-        grade: Option(
-            int,
-            description="시간표를 가져올 학년 (1, 2, 3, 4, 5, 6 중 하나)",
-            name="학년",
-            choices=[1, 2, 3, 4, 5, 6],
-        ),
-        class_name: Option(int, description="시간표를 가져올 반", name="반"),
-        day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜"),
+    context: ApplicationContext,
+    region: Option(
+        str,
+        description="시간표를 가져올 지역명 (예: 강원, 경기, 서울, 충북)",
+        name="지역명",
+        choices=region_choices,
+    ),
+    school_name: Option(str, description="시간표를 가져올 학교명 (예: 반곡중학교, 강남중학교)", name="학교명"),
+    grade: Option(
+        int,
+        description="시간표를 가져올 학년 (1, 2, 3, 4, 5, 6 중 하나)",
+        name="학년",
+        choices=[1, 2, 3, 4, 5, 6],
+    ),
+    class_name: Option(int, description="시간표를 가져올 반", name="반"),
+    day: Option(str, description="어제, 오늘, 내일, 모레 또는 연도-월-일 형식의 시간표를 가져올 날짜", name="날짜"),
 ):
     await context.response.defer()
     await asyncio.sleep(0)
@@ -120,9 +121,9 @@ async def time_table(
         return
 
     if (
-            not school_name.endswith("초등학교")
-            and not school_name.endswith("중학교")
-            and not school_name.endswith("고등학교")
+        not school_name.endswith("초등학교")
+        and not school_name.endswith("중학교")
+        and not school_name.endswith("고등학교")
     ):
         await context.followup.send("잘못된 학교명입니다.")
         return
@@ -159,19 +160,19 @@ async def time_table(
     name="학사일정", description="지정된 학년도의 학사일정을 가져옵니다.", guild_ids=conf().TEST_GUILD_ID
 )
 async def school_schedule(
-        context: ApplicationContext,
-        region: Option(
-            str,
-            description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)",
-            name="지역명",
-            choices=region_choices,
-        ),
-        school_name: Option(
-            str, description="학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"
-        ),
-        school_year: Option(
-            str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)", name="학년도"
-        ),
+    context: ApplicationContext,
+    region: Option(
+        str,
+        description="학사일정을 가져올 지역 (예: 강원, 경기, 서울, 충북)",
+        name="지역명",
+        choices=region_choices,
+    ),
+    school_name: Option(
+        str, description="학사일정을 가져올 학교명  (예: 반곡중학교, 강남중학교)", name="학교명"
+    ),
+    school_year: Option(
+        str, description="작년, 올해, 내년 또는 연도 형식의 학사일정을 가져올 학년도 (예 2022, 2010)", name="학년도"
+    ),
 ):
     await context.response.defer()
     await asyncio.sleep(0)
@@ -185,9 +186,9 @@ async def school_schedule(
         return
 
     if (
-            not school_name.endswith("초등학교")
-            and not school_name.endswith("중학교")
-            and not school_name.endswith("고등학교")
+        not school_name.endswith("초등학교")
+        and not school_name.endswith("중학교")
+        and not school_name.endswith("고등학교")
     ):
         await context.followup.send("잘못된 학교명입니다.")
         return
@@ -250,20 +251,22 @@ async def send_notification():
         ),
     )
 
+
 @tasks.loop(time=datetime.time(hour=6, tzinfo=KST))
 async def adjust_school_code():
     datas = COLLECTION.find({})
-    
+
     for data in datas:
         params = RequestParameters(
-            ATPT_OFCDC_SC_CODE=get_region_code(data['region']),
-            SCHUL_NM=data['school_name'],
+            ATPT_OFCDC_SC_CODE=get_region_code(data["region"]),
+            SCHUL_NM=data["school_name"],
         )
         school_response = await SchoolApi.request_school_info(params=params)
-        
+
         new_data = {"school_code": school_response.SD_SCHUL_CODE}
-        COLLECTION.update_one(filter={'id':data['id']}, update={"$set": new_data})
-    
+        COLLECTION.update_one(filter={"id": data["id"]}, update={"$set": new_data})
+
+
 bot.add_application_command(users)
 bot.run(TOKEN)
 CLIENT.close()
