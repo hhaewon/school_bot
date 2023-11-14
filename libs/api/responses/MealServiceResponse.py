@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 meal_names = ["아침", "점심", "저녁", "조식", "중식", "석식"]
 
+
 @dataclass(kw_only=True, slots=True)
 class MealServiceResponse:
     """
@@ -20,10 +21,12 @@ class MealServiceResponse:
         NTR_INFO: 영양정보\n
         MLSV_FROM_YMD: 급식시작일자\n
         MLSV_TO_YMD: 급식종료일자\n
+        LOAD_DTM: 수정일자\n
         dish: 요리명 리스트\n
         country_of_origin_info: 원산지 정보 딕셔너리\n
         nutrient_info: 영양 정보 딕셔너리\n
     """
+
     ATPT_OFCDC_SC_CODE: str
     ATPT_OFCDC_SC_NM: str
     SD_SCHUL_CODE: str
@@ -38,6 +41,7 @@ class MealServiceResponse:
     NTR_INFO: str
     MLSV_FROM_YMD: str
     MLSV_TO_YMD: str
+    LOAD_DTM: str
 
     @property
     def dish(self) -> list[str]:
@@ -60,7 +64,9 @@ class MealServiceResponse:
             for nutrient_info in nutrient_info_list:
                 parentheses_start_index = nutrient_info.index("(")
                 parentheses_end_index = nutrient_info.index(")")
-                unit = nutrient_info[parentheses_start_index + 1:parentheses_end_index]
+                unit = nutrient_info[
+                    parentheses_start_index + 1 : parentheses_end_index
+                ]
                 nutrient = nutrient_info[:parentheses_start_index]
                 degree = nutrient_info.split(": ")[-1]
                 nutrient_info_dict[nutrient] = f"{degree}{unit}"
@@ -70,4 +76,3 @@ class MealServiceResponse:
         chars_to_remove = "1234567890()."
         for char_to_remove in chars_to_remove:
             self.DDISH_NM = self.DDISH_NM.replace(char_to_remove, "")
-
